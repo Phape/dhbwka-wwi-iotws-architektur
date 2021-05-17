@@ -1,6 +1,37 @@
 IoT-Beispielarchitektur für die Vorlesung „IoT-Technik und Geschäftsmodelle”
 ============================================================================
 
+<table style="max-width: 100%;">
+    <tr>
+        <td>
+            <a href="screenshot-grafana.png">
+                <img src="screenshot-grafana.png" style="display: block; width: 100%;" />
+            </a>
+        </td>
+        <td>
+            <a href="screenshot-balena-cloud.png">
+                <img src="screenshot-balena-cloud.png" style="display: block; width: 100%;" />
+            </a>
+        </td>
+        <td>
+            <a href="screenshot-balena-cli.png">
+                <img src="screenshot-balena-cli.png" style="display: block; width: 100%;" />
+            </a>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Grafana-Dashboard
+        </td>
+        <td>
+            Balena Cloud
+        </td>
+        <td>
+            Balena CLI (Livepush)
+        </td>
+    </tr>
+</table>
+
 Kurzbeschreibung
 ----------------
 
@@ -8,7 +39,7 @@ Dieses Repository enthält ein minimales Beispiel für eine moderne IoT-Architek
 bestehend aus den Softwarekomponenten für die IoT-Devices sowie das Backend.
 Programmiersprache ist Python. Entwicklung, Test und Produktivsetzung sämtlicher
 Komponenten erfolgen mit Docker – sowohl auf den IoT-Devices als auch im Backend.
-Auf Seiten der Devices wird dies durch die **Balena Cloud** im Produktbetrieb
+Auf Seiten der Devices wird dies durch die **Balena Cloud** im Produktivbetrieb
 bzw. das **Balena CLI** während der Entwicklung vollständig automatisiert. Die
 Docker-Container des Backends können hingegen in „klassischen“ Cloudumgebungen
 deployt werden.
