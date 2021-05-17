@@ -1,0 +1,96 @@
+version: '2'
+
+volumes:
+    redis-data:
+    grafana-data:
+
+services:
+    # Redis Key-Value Store
+    redis:
+        build: redis/
+        restart: always
+        volumes:
+            - 'redis-data:/data'
+        expose:
+            - 6379
+    
+    # Programm zum Auslesen der Sensordaten
+    sensor:
+        build: sensor/
+        privileged: true
+        restart: always
+        depends_on:
+            - redis
+        environment:
+            - REDIS_HOST=redis
+            - REDIS_PORT=6379
+            - REDIS_DB=0
+    
+    # Programm zur Auswertung des Start/Stop-Hardwarebuttons
+    startstopbutton:
+        build: startstopbutton/
+        privileged: true
+        restart: always
+        depends_on:
+            - redis
+        environment:
+            - REDIS_HOST=redis
+            - REDIS_PORT=6379
+            - REDIS_DB=0
+    
+    # Programm zum öffentlichen Datenaustausch via MQTT
+    mqtthandler:
+        build: mqtthandler/
+        restart: always
+        depends_on:
+            - redis
+        environment:
+            - REDIS_HOST=redis
+            - REDIS_PORT=6379
+            - REDIS_DB=0
+        labels:
+            io.balena.features.supervisor-api: '1'
+    
+    # Lokales Grafana-Dashbaord
+    grafana:
+        build: grafana/
+        restart: always
+        depends_on:
+            - redis
+        environment:
+            - REDIS_HOST=redis
+            - REDIS_PORT=6379
+            - REDIS_DB=0
+        volumes:
+            - 'grafana-data:/var/lib/grafana'
+        ports:
+            - '80:3000'
+
+## Vollständiges Beispiel aus der Balena-Dokumentation. Ggf. wichtig als Vorlage,
+## falls der direkte Hardwarezugriff in einem der Container nicht funktioniert.
+## Vgl. https://www.balena.io/docs/learn/develop/multicontainer/
+
+#services:
+#    main:
+#        build:
+#            context: .
+#        privileged: true
+#        restart: always
+#        network_mode: host
+#        privileged: true
+#        volumes:
+#            - 'resin-data:/data'
+#        environment:
+#            - 'DBUS_SYSTEM_BUS_ADDRESS=unix:path=/host/run/dbus/system_bus_socket'
+#        labels:
+#            io.balena.features.kernel-modules: '1'
+#            io.balena.features.firmware: '1'
+#            io.balena.features.dbus: '1'
+#            io.balena.features.supervisor-api: '1'
+#            io.balena.features.balena-api: '1'
+#        devices:
+#            - "/dev/i2c-1:/dev/i2c-1"
+#            - "/dev/mem:/dev/mem"
+#            - "/dev/ttyACM0:/dev/ttyACM0"
+#        cap_add:
+#            - SYS_RAWIO
