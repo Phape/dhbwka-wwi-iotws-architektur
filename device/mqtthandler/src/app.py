@@ -34,10 +34,18 @@ class App:
         [
             {
                 "_id": "1621122796939-0",
+                "_device_uuid": "6076a30f1cfaca6636db7f89c83507fc",
+                "_device_type": "raspberrypi",
+                "_app_id": "1829540",
+                "_app_name": "IoT-Projekt",
                 "temperature_celsius": "20.3",
                 "humidity_percent": "74",
             }, {
                 "_id": "1621122797943-0",
+                "_device_uuid": "6076a30f1cfaca6636db7f89c83507fc",
+                "_device_type": "raspberrypi",
+                "_app_id": "1829540",
+                "_app_name": "IoT-Projekt",
                 "temperature_celsius": "20.8",
                 "humidity_percent": "72",
             }, {
@@ -48,8 +56,8 @@ class App:
     Jeder Eintrag entspricht dabei einem JSON-Objekt mit genau einer Messung.
     `_id` ist die ID des Messwertes aus der Redis-Datenbank und entspricht
     daher dem Unix Timestamp mit einer angehängten Laufnummer. Alle anderen
-    Werte sind Sensordaten, mit den Namen und Werten, wie sie in Redis
-    gespeichert wurden.
+    Werte mit Unterstrich am Anfang sind Verwaltungsdaten zur Identifikation
+    des IoT-Devices. Werte ohne Unterstrich sind Sensordaten aus Redis.
 
     Über die anderen beiden Topics können folgende Befehle ebenfalls als UTF-8
     kodierte JSON-Objekte emfpangen werden:
@@ -122,9 +130,9 @@ class App:
         # Balena Device ID und App ID
         self._balena = {
             "device_uuid": os.getenv("BALENA_DEVICE_UUID") or self._config["balena"]["device_uuid"],
+            "device_type": os.getenv("BALENA_DEVICE_TYPE") or self._config["balena"]["device_type"],
             "app_id":      os.getenv("BALENA_APP_ID")      or self._config["balena"]["app_id"],
             "app_name":    os.getenv("BALENA_APP_NAME")    or self._config["balena"]["app_name"],
-            "device_type": os.getenv("BALENA_DEVICE_TYPE") or self._config["balena"]["device_type"],
         }
 
         # Voreingestelltes Sendeintervall
@@ -280,7 +288,7 @@ class App:
 
     def _save_sender_last_id(self, last_id):
         """
-        Legt den übergebenen mit dem Key REDIS_KEY_MQTT_SENDER_LAST_ID in Redis ab, so dass
+        Legt die übergebene ID mit dem Key REDIS_KEY_MQTT_SENDER_LAST_ID in Redis ab, so dass
         beim nächsten Sendeversuch alle Events nach dieser ID verschickt werden.
         """
         self._last_id = last_id
@@ -336,7 +344,13 @@ class App:
         simplified_measurements = []
 
         for measurement in measurements:
-            simplified_measurement = {"_id": measurement[0]}
+            simplified_measurement = {
+                "_id":          measurement[0],
+                "_device_uuid": self._balena["device_uuid"],
+                "_device_type": self._balena["device_type"],
+                "_app_id":      self._balena["app_id"],
+                "_app_name":    self._balena["app_name"],
+            }
 
             for key in measurement[1]:
                 simplified_measurement[key] = measurement[1][key]
