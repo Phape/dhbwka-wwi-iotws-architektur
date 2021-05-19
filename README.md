@@ -4,6 +4,32 @@ IoT-Beispielarchitektur für die Vorlesung „IoT-Technik und Geschäftsmodelle�
 <table style="max-width: 100%;">
     <tr>
         <td>
+            <a href="architektur-allgemein.png">
+                <img src="architektur-allgemein.png" style="display: block; width: 100%;" />
+            </a>
+        </td>
+        <td>
+            <a href="architektur-device.png">
+                <img src="architektur-device.png" style="display: block; width: 100%;" />
+            </a>
+        </td>
+        <td>
+            &nbsp;
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Allgemeine Sytemarchitektur
+        </td>
+        <td>
+            Deviceseitige Systemarchitektur
+        </td>
+        <td>
+            &nbsp;
+        </td>
+    </tr>
+    <tr>
+        <td>
             <a href="screenshot-grafana.png">
                 <img src="screenshot-grafana.png" style="display: block; width: 100%;" />
             </a>
