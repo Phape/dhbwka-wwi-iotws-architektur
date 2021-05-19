@@ -114,7 +114,7 @@ die betroffenen Komponenten bei jeder Quellcodeänderungen innerhalb weniger Sek
 neugestartet, so dass man fast wie lokal entwickeln kann. Die notwendigen Schritte sind
 hierfür:
 
-  1. In der Balena Cloud eine neue Anwendung registieren
+  1. In der Balena Cloud eine neue Anwendung registrieren
   2. Development-Version des Balena OS herunterladen und auf SD-Karte schreiben
   3. Das Entwicklerboard mit dem eben heruntergelandenen Balena OS starten
   4. In der Cloud den „Local Mode“ aktivieren
@@ -147,7 +147,7 @@ Produktivsetzung der IoT-Devices
 --------------------------------
 
 Zur Produktivsetzung der Devices muss in der Cloud der „Local Mode” deaktiviert
-werden (in den Geräteinstellungen des Entwicklerboards). Anschließend kann das
+werden (in den Geräteeinstellungen des Entwicklerboards). Anschließend kann das
 Device wieder über die Balena Cloud verwaltet und konfiguriert werden. Das
 eigentliche Deployment erfolgt mit folgendem Befehl:
 
@@ -155,7 +155,7 @@ eigentliche Deployment erfolgt mit folgendem Befehl:
 
 Die Bezeichnung `IoT-Projekt` muss dabei durch den tatsächlichen Namen der Anwendung
 innerhalb der Balena Cloud ersetzt werden. Innerhalb der Cloud kann das Verhalten
-der Devices über verschiedene Umgebungsvariablen beeinflusst werden. Eine Auflist
+der Devices über verschiedene Umgebungsvariablen beeinflusst werden. Eine Auflistung
 findet sich in den README-Dateien und den Konfigurationsdateien der einzelnen
 Komponenten.
 
