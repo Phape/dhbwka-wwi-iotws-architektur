@@ -90,6 +90,8 @@ class App:
 
         THREADING: Diese Metheode läuft in einem separaten GPIO-Thread
         """
+        time.sleep(1)
+
         enabled = self._redis.get(REDIS_KEY_MEASUREMENT_ENABLED) != "0"
 
         if enabled:
