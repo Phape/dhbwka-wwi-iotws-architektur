@@ -4,13 +4,13 @@ IoT-Beispielarchitektur für die Vorlesung „IoT-Technik und Geschäftsmodelle�
 <table style="max-width: 100%;">
     <tr>
         <td>
-            <a href="architektur-allgemein.png">
-                <img src="architektur-allgemein.png" style="display: block; width: 100%;" />
+            <a href="misc/img/architektur-allgemein.png">
+                <img src="misc/img/architektur-allgemein.png" style="display: block; width: 100%;" />
             </a>
         </td>
         <td>
-            <a href="architektur-device.png">
-                <img src="architektur-device.png" style="display: block; width: 100%;" />
+            <a href="misc/img/architektur-device.png">
+                <img src="misc/img/architektur-device.png" style="display: block; width: 100%;" />
             </a>
         </td>
         <td>
@@ -30,18 +30,18 @@ IoT-Beispielarchitektur für die Vorlesung „IoT-Technik und Geschäftsmodelle�
     </tr>
     <tr>
         <td>
-            <a href="screenshot-grafana.png">
-                <img src="screenshot-grafana.png" style="display: block; width: 100%;" />
+            <a href="misc/img/screenshot-grafana.png">
+                <img src="misc/img/screenshot-grafana.png" style="display: block; width: 100%;" />
             </a>
         </td>
         <td>
-            <a href="screenshot-balena-cloud.png">
-                <img src="screenshot-balena-cloud.png" style="display: block; width: 100%;" />
+            <a href="misc/img/screenshot-balena-cloud.png">
+                <img src="misc/img/screenshot-balena-cloud.png" style="display: block; width: 100%;" />
             </a>
         </td>
         <td>
-            <a href="screenshot-balena-cli.png">
-                <img src="screenshot-balena-cli.png" style="display: block; width: 100%;" />
+            <a href="misc/img/screenshot-balena-cli.png">
+                <img src="misc/img/screenshot-balena-cli.png" style="display: block; width: 100%;" />
             </a>
         </td>
     </tr>
