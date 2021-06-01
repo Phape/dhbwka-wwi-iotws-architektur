@@ -70,10 +70,8 @@ services:
     # Service zum übersetzen von Zigbee zu MQTT
     zigbee2mqtt:
         build: zigbee2mqtt/
-        # container_name: zigbee2mqtt
         volumes:
           - zigbee2mqtt-data:/app/data
-        #   - /run/udev:/run/udev:ro
         devices:
           - /dev/ttyACM0:/dev/ttyACM0
         restart: always
