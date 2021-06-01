@@ -3,6 +3,7 @@ version: '2'
 volumes:
     redis-data:
     grafana-data:
+    zigbee2mqtt-data:
 
 services:
     # Redis Key-Value Store
@@ -27,16 +28,16 @@ services:
             - REDIS_DB=0
     
     # Programm zur Auswertung des Start/Stop-Hardwarebuttons
-    startstopbutton:
-        build: startstopbutton/
-        privileged: true
-        restart: always
-        depends_on:
-            - redis
-        environment:
-            - REDIS_HOST=redis
-            - REDIS_PORT=6379
-            - REDIS_DB=0
+    # startstopbutton:
+    #     build: startstopbutton/
+    #     privileged: true
+    #     restart: always
+    #     depends_on:
+    #         - redis
+    #     environment:
+    #         - REDIS_HOST=redis
+    #         - REDIS_PORT=6379
+    #         - REDIS_DB=0
     
     # Programm zum öffentlichen Datenaustausch via MQTT
     mqtthandler:
@@ -65,6 +66,21 @@ services:
             - 'grafana-data:/var/lib/grafana'
         ports:
             - '80:3000'
+    
+    # Service zum übersetzen von Zigbee zu MQTT
+    zigbee2mqtt:
+        build: zigbee2mqtt/
+        # container_name: zigbee2mqtt
+        volumes:
+          - zigbee2mqtt-data:/app/data
+        #   - /run/udev:/run/udev:ro
+        devices:
+          - /dev/ttyACM0:/dev/ttyACM0
+        restart: always
+        network_mode: host
+        privileged: true
+        environment:
+          - TZ=Europe/Amsterdam
 
 ## Vollständiges Beispiel aus der Balena-Dokumentation. Ggf. wichtig als Vorlage,
 ## falls der direkte Hardwarezugriff in einem der Container nicht funktioniert.
