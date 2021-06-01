@@ -2,6 +2,7 @@
 
 import redis
 import configparser, logging, pprint, os, random, sys, time
+import RPi.GPIO as GPIO 
 
 REDIS_KEY_MEASUREMENT_INTERVAL = "measurement:interval"
 REDIS_KEY_MEASUREMENT_ENABLED  = "measurement:enabled"
@@ -53,6 +54,12 @@ class App:
         # Voreingestelltes Messintervall
         self._interval_seconds = float(os.getenv("INTERVAL_SECONDS") or self._config["measurement"]["interval_seconds"])
         self._enabled = True
+
+        # GPIO initialisieren
+        GPIO.setmode(GPIO.BCM)
+        self.PIR = 18    # Bewegungssensor GPIO Pin
+        GPIO.setup(self.PIR, GPIO.IN)
+
 
     def main(self):
         """
@@ -120,8 +127,20 @@ class App:
 
         # Beispiel: Wir "messen" eine Zufallszahl. :-)
         return {
-            "random": random.randint(1, 99)
+            "random": random.randint(1, 99),
+            "movement": self._detect_movement()
         }
+
+    def _detect_movement(self):
+        if(GPIO.input(self.PIR) == 0):
+            self._logger.info("Es bewegt sich nichts.")
+            return 0
+        elif(GPIO.input(self.PIR) == 1):
+            self._logger.info("Bewegung erkannt.")
+            return 1
+        else:
+            self._logger.info("Fehler bei der Bewegungsdetektion.")
+            return -1
 
     def _save_measurement(self, measurement):
         """
