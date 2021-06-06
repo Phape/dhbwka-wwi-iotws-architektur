@@ -1,0 +1,8 @@
+# ACHTUNG: Wenn Sie RPi.GPIO installieren wollen, kommentieren Sie in der Datei Dockerfile.template
+# den hierfür notwendigen Workaround aus. Sonst lässt sich die Bibliothek nicht installieren, da die
+# C-Quellcodes nicht kompiilert werden können.
+
+redis
+virtualenv
+virtualenvwrapper
+opencv-python

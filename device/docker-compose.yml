@@ -79,6 +79,20 @@ services:
         privileged: true
         environment:
           - TZ=Europe/Amsterdam
+    
+    #Kamera Service
+    camera:
+        build: ./camera
+        privileged: true
+        restart: always
+        devices:
+            - /dev/video0:/dev/video0
+        depends_on:
+            - redis
+        environment:
+            - REDIS_HOST=redis
+            - REDIS_PORT=6379
+            - REDIS_DB=0
 
 ## Vollständiges Beispiel aus der Balena-Dokumentation. Ggf. wichtig als Vorlage,
 ## falls der direkte Hardwarezugriff in einem der Container nicht funktioniert.
