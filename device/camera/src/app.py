@@ -9,6 +9,7 @@ REDIS_KEY_MEASUREMENT_ENABLED  = "measurement:enabled"
 REDIS_KEY_MEASUREMENT_VALUES   = "measurement:values"
 
 class CameraDevice():
+    
     def __init__(self):
         self.cap = cv2.VideoCapture(0)
         ret, frame = self.cap.read()
@@ -230,19 +231,17 @@ class App:
  
         ssd = SSD(ssd_proc, ssd_net)
  
-        #TODO: Read Image from PiCamera
-        #camera = camera_device.get_latest_frame
+        #Read Image from PiCamera
         camera_device.save_jpeg_frame()
         image = cv2.imread("./current.jpg")
-        #print("Image read from: "+im_path)
- 
+         
         obj_data = ssd.detect(image)
         persons = ssd.get_objects(image, obj_data, person_class, 0.85)
         person_count = len(persons)
         print("Person count on the image: "+str(person_count))
+        #TODO: Evtl Absprache bei der Erkennung einer Person das Bild speichern
         #Utils.draw_objects(persons, "PERSON", (0, 0, 255), image)
-        
-        # Beispiel: Wir "messen" eine Zufallszahl. :-)
+
         return {
             "persons": person_count
         }

@@ -32,8 +32,6 @@ WORKDIR /usr/src/app
 # Enable the v4l2 driver for the Raspberry Pi camera
 RUN printf "bcm2835-v4l2\n" >> /etc/modules
 
-#RUN v4l2-ctl --list-devices
-
 RUN pip3 install --upgrade pip
 
 COPY requirements.txt .
