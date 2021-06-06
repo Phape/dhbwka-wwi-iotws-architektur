@@ -10,7 +10,7 @@ REDIS_KEY_MEASUREMENT_VALUES   = "measurement:values"
 
 class CameraDevice():
     def __init__(self):
-        self.cap = cv2.VideoCapture(-1)
+        self.cap = cv2.VideoCapture(0)
         ret, frame = self.cap.read()
         if not ret:
             print('Failed to open default camera. Exiting...')
@@ -19,6 +19,7 @@ class CameraDevice():
         self.cap.set(4, 480)
 
     def rotate(self, frame):
+        flip = True
         if flip:
             (h, w) = frame.shape[:2]
             center = (w/2, h/2)
@@ -26,10 +27,14 @@ class CameraDevice():
             frame = cv2.warpAffine(frame, M, (w, h))
         return frame
 
-    async def get_latest_frame(self):
+    def get_latest_frame(self):
         ret, frame = self.cap.read()
-        time.sleep(1)
         return self.rotate(frame)
+
+    def save_jpeg_frame(self):
+        encode_param = (int(cv2.IMWRITE_JPEG_QUALITY), 90)
+        frame = self.get_latest_frame()
+        cv2.imwrite('current.jpg', frame, encode_param)
 
 class CaffeModelLoader:	
     @staticmethod
@@ -227,18 +232,12 @@ class App:
  
         #TODO: Read Image from PiCamera
         #camera = camera_device.get_latest_frame
-        #camera.start_preview()
-        #time.sleep(2)
-        #secondscamera.capture(capturing)
-        #camera.stop_preview()
-        #im_dir = r"C:\PI_RPD\test_images"
-        #im_name = "woman_640x480_01.png"
-        #im_path = os.path.join(im_dir, im_name)
-        image = cv2.imread(self.camera_device.get_latest_frame)
+        camera_device.save_jpeg_frame()
+        image = cv2.imread("./current.jpg")
         #print("Image read from: "+im_path)
  
         obj_data = ssd.detect(image)
-        persons = ssd.get_objects(image, obj_data, person_class, 0.5)
+        persons = ssd.get_objects(image, obj_data, person_class, 0.85)
         person_count = len(persons)
         print("Person count on the image: "+str(person_count))
         #Utils.draw_objects(persons, "PERSON", (0, 0, 255), image)
