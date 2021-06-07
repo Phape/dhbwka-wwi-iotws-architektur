@@ -1,11 +1,11 @@
-Sensordaten ermitteln
+Erkennung von Menschen mit Hilfe einer Kamera
 =====================
 
 Beschreibung
 ------------
 
-Dieses Programm kümmert sich um die Ansteuerung der Sensoren des IoT-Devices
-zur periodischen Ermittlung der Messwerte. Gemäß der Aufgabenteilung der
+Dieses Programm kümmert sich um die Ansteuerung der Kamera
+zur periodischen Erkennung von Menschen im Kamerafeld. Gemäß der Aufgabenteilung der
 verschiedenen deviceseitigen Programme, werden die Messwerte hier nicht
 weiterverarbeitet, sondern einfach in einen Redis Stream geschrieben. Das
 Auslesen und Verarbeiten der Streamdaten erfolgt durch die anderen Programme.
@@ -34,3 +34,4 @@ Messungen zu nehmen:
 
  * `measurement:enabled`: 1 = Messung eingeschaltet, 0 = Messung ausgeschaltet
  * `measurement:interval`: Abstand zwischen zwei Messungen in Sekunden
+ * `measurement:confidence`: Benötigtes Erkennungsvertrauen für die Erkennung eines Menschen
