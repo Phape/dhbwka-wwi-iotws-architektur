@@ -13,6 +13,7 @@ class CameraDevice():
     
     def __init__(self):
         self.cap = cv2.VideoCapture(0)
+        self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
         ret, frame = self.cap.read()
         if not ret:
             print('Failed to open default camera. Exiting...')
@@ -244,14 +245,13 @@ class App:
         #Durchführung der Objekterkennung
         obj_data = ssd.detect(image)
         persons = ssd.get_objects(image, obj_data, person_class, 0.85)
-        person_count = len(persons)
-        self._logger.info("Person count on the image: "+str(person_count))
+        self._logger.info("Person count on the image: "+str(len(persons)))
 
         #TODO: Evtl Absprache bei der Erkennung einer Person das Bild speichern
         #Utils.draw_objects(persons, "PERSON", (0, 0, 255), image)
 
         return {
-            "persons": person_count
+            "persons": len(persons)
         }
 
 
@@ -283,4 +283,3 @@ if __name__ == "__main__":
     camera_device = CameraDevice()
     app = App(configfile, camera_device)
     app.main()
-    
