@@ -7,6 +7,7 @@ import numpy as np
 REDIS_KEY_MEASUREMENT_INTERVAL = "measurement:interval"
 REDIS_KEY_MEASUREMENT_ENABLED  = "measurement:enabled"
 REDIS_KEY_MEASUREMENT_VALUES   = "measurement:values"
+#REDIS_KEY_MEASUREMENT_CONFIDENCE = "measurement:confidence"
 
 class CameraDevice():
     
@@ -61,6 +62,7 @@ class FrameProcessor:
         return blob
 
 class SSD:	
+
     def __init__(self, frame_proc, ssd_net):
         self.proc = frame_proc
         self.net = ssd_net
@@ -120,6 +122,7 @@ class App:
         """
 
         self.camera_device = camera_device
+
         # Logger konfigurieren
         self._logger = logging.getLogger()
         self._logger.setLevel(logging.INFO)
@@ -153,6 +156,12 @@ class App:
         self._interval_seconds = float(os.getenv("INTERVAL_SECONDS") or self._config["measurement"]["interval_seconds"])
         self._enabled = True
 
+        # Objecterkennungsmodell Laden
+        proto_file = r"./mobilenet.prototxt"
+        model_file = r"./mobilenet.caffemodel"
+        self.ssd_net = CaffeModelLoader.load(proto_file, model_file)
+        self._logger.info("Caffe model geladen: "+model_file)
+
 
     def main(self):
         """
@@ -178,6 +187,7 @@ class App:
         String "0" wird dabei als Ja interpretiert. Fehlt der Eintrag, wird der in
         self._enabled hinterlegte, zuletzt bekannte Werte verwendet.
         """
+
         enabled = self._redis.get(REDIS_KEY_MEASUREMENT_ENABLED)
 
         if enabled == None:
@@ -219,26 +229,24 @@ class App:
         """
         self._logger.info("Starte neue Messung")
 
-        proto_file = r"./mobilenet.prototxt"
-        model_file = r"./mobilenet.caffemodel"
-        ssd_net = CaffeModelLoader.load(proto_file, model_file)
-        print("Caffe model loaded from: "+model_file)
- 
         proc_frame_size = 300
+
         # frame processor for MobileNet
         ssd_proc = FrameProcessor(proc_frame_size, 1.0/127.5, 127.5)
         person_class = 15
  
-        ssd = SSD(ssd_proc, ssd_net)
+        ssd = SSD(ssd_proc, self.ssd_net)
  
-        #Read Image from PiCamera
+        #Bild der PiCamera auslesen
         camera_device.save_jpeg_frame()
         image = cv2.imread("./current.jpg")
-         
+        
+        #Durchführung der Objekterkennung
         obj_data = ssd.detect(image)
         persons = ssd.get_objects(image, obj_data, person_class, 0.85)
         person_count = len(persons)
-        print("Person count on the image: "+str(person_count))
+        self._logger.info("Person count on the image: "+str(person_count))
+
         #TODO: Evtl Absprache bei der Erkennung einer Person das Bild speichern
         #Utils.draw_objects(persons, "PERSON", (0, 0, 255), image)
 
@@ -268,7 +276,7 @@ def checkDeviceReadiness():
 
 if __name__ == "__main__":
     configfile = "app.conf"
-    #checkDeviceReadiness()
+    checkDeviceReadiness()
 
     if len(sys.argv) > 1:
         configfile = sys.argv[1]

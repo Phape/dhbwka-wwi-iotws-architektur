@@ -1,3 +1,4 @@
+# Fehlende Dependencies für das arm64 image daher raspbi 3
 FROM balenalib/raspberrypi3-debian:stretch-20190612
 
 # Install dependencies
