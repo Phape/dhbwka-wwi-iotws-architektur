@@ -1,8 +1,10 @@
 import smtplib, ssl
 from socket import gaierror
-import os, sys, logging, configparser
+import os, sys, logging, configparser, time
 import redis
 
+REDIS_MAIL_ALERT_ENABLED = "alert:enabled" # "measurement:enabled"
+REDIS_LAST_MAIL_ALERT_TIME = "alert:last"
 class App:
     def __init__(self, configfile):
         """
@@ -60,7 +62,24 @@ class App:
         )
 
     def main(self):
-        self.send_mail()
+        try:
+            while True:
+                enabled = self._redis.get(REDIS_MAIL_ALERT_ENABLED) != "0"
+
+                if not self._redis.get(REDIS_LAST_MAIL_ALERT_TIME):
+                    self.send_mail() # Parametrisieren, Hier Mail schicken, dass Alarmanlage in Betrieb ist
+                    self._redis.set(REDIS_LAST_MAIL_ALERT_TIME, time.time())
+
+                if enabled and time.time - self._redis.get(REDIS_LAST_MAIL_ALERT_TIME) > 3600: # alarm cooldown: 1h
+                    self._logger.info("Alarm ist " + enabled + ", Mail wird versendet.")
+                    self.send_mail()
+                    self._redis.set(REDIS_LAST_MAIL_ALERT_TIME, time.time())
+                    # self._redis.set(REDIS_MAIL_ALERT_ENABLED, "0") # sollte automatisch 0 gesetzt werden, wenn sensoren nichts mehr melden
+                else: 
+                    time.sleep(10)
+        except KeyboardInterrupt:
+            pass
+
 
     def send_mail(self):
         message = """\
