@@ -58,7 +58,14 @@ class App:
         # GPIO initialisieren
         GPIO.setmode(GPIO.BCM)
         self.PIR = 18    # Bewegungssensor GPIO Pin
+        self.CLK = 5    # Drehschalter GPIO Clockpin
+        self.DT = 6     # Drehschalter GPIO Datapin
+        self.SP = 13    # Drehschalter GPIO Switchpin
         GPIO.setup(self.PIR, GPIO.IN)
+        GPIO.setup(self.SP, GPIO.IN, pull_up_down = GPIO.PUD_UP)
+
+        # Variablen
+        self.lock = 0 # Variable für Türschloss-Simulation
 
 
     def main(self):
@@ -71,6 +78,8 @@ class App:
                 if self._is_measurement_enabled():
                     mesaurement = self._perform_mesaurement()
                     self._save_measurement(mesaurement)
+                    #mesaurement = self._switch_pressed()
+                GPIO.add_event_detect(self.SP, GPIO.FALLING, callback=self._switch_pressed, bouncetime=50)
 
                 interval_seconds = self._read_measurement_interval()
                 time.sleep(interval_seconds)
@@ -127,7 +136,7 @@ class App:
 
         # Beispiel: Wir "messen" eine Zufallszahl. :-)
         return {
-            "random": random.randint(1, 99),
+            #"random": random.randint(1, 99),
             "movement": self._detect_movement()
         }
 
@@ -150,6 +159,15 @@ class App:
         """
         self._logger.info("Speichere Messwerte: %s" % self._pp.pformat(measurement))
         self._redis.xadd(REDIS_KEY_MEASUREMENT_VALUES, measurement)
+    
+    #KY-040 Kodierter Drehregler
+    def _switch_pressed(self):
+        if(GPIO.input(self.SP) == 0):
+            self.lock = 1
+            self._logger.info("Abgeschlossen")
+        if(GPIO.input(self.SP) == 1):
+            self.lock = 0
+            self._logger.info("Aufgeschlossen")
 
 if __name__ == "__main__":
     configfile = "app.conf"
