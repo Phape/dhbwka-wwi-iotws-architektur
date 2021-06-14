@@ -41,41 +41,76 @@ class App:
         self._redis = redis.Redis(decode_responses=True, **redis_config)
 
     def main(self):
-        system_active = self._redis.get(REDIS_ALERT_SYSTEM_ACTIVE) != 0
-        if system_active is None:
-            system_active = True
-            self._redis.set(REDIS_ALERT_SYSTEM_ACTIVE, "1")
+        self._redis.set(REDIS_ALERT_SYSTEM_ACTIVE, "1") # For debugging
+        system_active = self._is_alert_system_active()
+        print("alert system active von Redis: " + self._redis.get(REDIS_ALERT_SYSTEM_ACTIVE) + " variable: " + str(system_active))
 
         try:
-            while system_active:
-                alert_enabled = self._redis.get(REDIS_ALERT_ENABLED) != "0"
-
-                if alert_enabled:
-                    self._logger.info("Alarm ist an. Um ihn zu deaktivieren schalte das Alarmsystem ab.")
-
-                elif not alert_enabled:
-                    if self.is_alert():
-                        self._logger.info("Alarm wurde ausgelöst.")
-                        self._redis.set(REDIS_ALERT_ENABLED, "1")
-                    else:
-                        self._logger.info("Alles ist sicher. Es wurde kein Alarm ausgelöst.")
-
+            while True:
+                if system_active:
+                    self._system_active_cycle()
                 else:
-                    self._logger.info("Problem bei Alarmierungslogik aufgetreten.")
+                    self._logger.info("System ist inaktiv. Zum aktivieren " + REDIS_ALERT_SYSTEM_ACTIVE + " auf 1 setzen.")
 
                 time.sleep(10)
 
         except KeyboardInterrupt:
             pass
 
+    
+    def _system_active_cycle(self):
+        # self._redis.set(REDIS_ALERT_ENABLED, "0") # For debugging
+        alert_enabled = self._is_alert_enabled()
+        print("alert enabled von Redis: " + self._redis.get(REDIS_ALERT_ENABLED) + " variable: " + str(alert_enabled))
 
-    def is_alert(self):
+        if alert_enabled:
+            self._logger.info("Alarm ist an. Um ihn zu deaktivieren setze " + REDIS_ALERT_ENABLED + " auf 0.")
+        elif not alert_enabled:
+            if self._is_alert():
+                self._logger.info("Alarm wurde ausgelöst.")
+                self._redis.set(REDIS_ALERT_ENABLED, "1")
+            else:
+                self._logger.info("Alles ist sicher. Es wurde kein Alarm ausgelöst.")
+
+        else:
+            self._logger.info("Problem bei Alarmierungslogik aufgetreten.")
+
+
+    def _is_alert(self):
+        """Entscheidet, ob ein Alarm ausgelöst werden soll.
+
+        Returns:
+            bool: Wahr, wenn ein Alarm ausgelöst werden soll
+        """
         enable_alert = False
         # Hier Logik, die entscheidet, ob ein Alarm ausgelöst wird, bspw. Sensor 1 = 1 and Sensor 2 = 1
         self._logger.info("Prüfe, ob ein Alarm ausgelöst wird...")
 
         return enable_alert
 
+
+    def _is_alert_enabled(self):
+        """Prüft, ob der Alarm bereits ausgelöst ist.
+
+        Returns:
+            bool: Wahr, wenn der Alarm bereits aktiv ist
+        """
+        if self._redis.get(REDIS_ALERT_ENABLED) == "1":
+            return True
+        else:
+            return False
+
+
+    def _is_alert_system_active(self):
+        """Prüft, ob das Alarmsystem scharfgestellt ist.
+
+        Returns:
+            bool: Wahr, wenn das Alarmsystem aktiviert ist.
+        """
+        if self._redis.get(REDIS_ALERT_SYSTEM_ACTIVE) == "1":
+            return True
+        else:
+            return False
 
 
 if __name__ == "__main__":

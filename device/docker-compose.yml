@@ -86,13 +86,14 @@ services:
         restart: no
         depends_on:
             - redis
+            - alarmhandler
         environment:
             - REDIS_HOST=redis
             - REDIS_PORT=6379
             - REDIS_DB=0
 
     # Service, der entscheidet, ob ein Alarm ausgelöst wird
-    mailhandler:
+    alarmhandler:
         build: alarmhandler/
         restart: always
         depends_on:
