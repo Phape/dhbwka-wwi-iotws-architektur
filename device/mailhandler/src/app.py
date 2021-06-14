@@ -1,9 +1,9 @@
 import smtplib, ssl
 from socket import gaierror
-import os, sys, logging, configparser, time
+import os, sys, logging, configparser, time, datetime
 import redis
 
-REDIS_MAIL_ALERT_ENABLED = "alert:enabled" # "measurement:enabled"
+REDIS_ALERT_ENABLED = "alert:enabled"
 REDIS_LAST_MAIL_ALERT_TIME = "alert:last"
 class App:
     def __init__(self, configfile):
@@ -57,28 +57,42 @@ class App:
         self._mail_server_config["port"] = int(self._mail_server_config["port"])
 
         self._logger.info(
-            "Mail Server Konfiguration: host=%(host)s, port=%(port)s, from_addr=%(from_addr)s, to_addrs=%(to_addrs)s, user=%(user)s, password=%(password)s"
+            "Mail Server Konfiguration: host=%(host)s, port=%(port)s, from_addr=%(from_addr)s, to_addrs=%(to_addrs)s, user=%(user)s, password=**not_shown**"
             % self._mail_server_config
         )
 
     def main(self):
         try:
             while True:
-                enabled = self._redis.get(REDIS_MAIL_ALERT_ENABLED) != "0"
+                alert_enabled = self._is_alert_enabled()
+                last_alert_time = float(self._redis.get(REDIS_LAST_MAIL_ALERT_TIME))
+                self._logger.info("Letzte Alarmierung per Mail: " + datetime.datetime.utcfromtimestamp(last_alert_time).isoformat())
 
-                if not self._redis.get(REDIS_LAST_MAIL_ALERT_TIME):
+                if not last_alert_time:
+                    self._logger.info("Keine letze Alarm-Mail-Zeit gefunden. Benachrichtige Nutzer per Mail.")
                     self.send_mail() # Parametrisieren, Hier Mail schicken, dass Alarmanlage in Betrieb ist
                     self._redis.set(REDIS_LAST_MAIL_ALERT_TIME, time.time())
 
-                if enabled and time.time - self._redis.get(REDIS_LAST_MAIL_ALERT_TIME) > 3600: # alarm cooldown: 1h
-                    self._logger.info("Alarm ist " + enabled + ", Mail wird versendet.")
+                if alert_enabled and time.time - last_alert_time > 3600: # alarm cooldown: 1h
+                    self._logger.info("Alarm ist " + alert_enabled + ", Mail wird versendet.")
                     self.send_mail()
                     self._redis.set(REDIS_LAST_MAIL_ALERT_TIME, time.time())
-                    # self._redis.set(REDIS_MAIL_ALERT_ENABLED, "0") # sollte automatisch 0 gesetzt werden, wenn sensoren nichts mehr melden
                 else: 
                     time.sleep(10)
         except KeyboardInterrupt:
             pass
+
+
+    def _is_alert_enabled(self):
+        """Prüft, ob der Alarm ausgelöst ist
+
+        Returns:
+            bool: Wahr, wenn der Alarm ausgelöst ist
+        """
+        if self._redis.get(REDIS_ALERT_ENABLED) == "1":
+            return True
+        else:
+            return False
 
 
     def send_mail(self):
