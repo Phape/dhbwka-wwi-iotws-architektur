@@ -91,6 +91,17 @@ services:
             - REDIS_PORT=6379
             - REDIS_DB=0
 
+    # Service, der entscheidet, ob ein Alarm ausgelöst wird
+    mailhandler:
+        build: alarmhandler/
+        restart: always
+        depends_on:
+            - redis
+        environment:
+            - REDIS_HOST=redis
+            - REDIS_PORT=6379
+            - REDIS_DB=0
+
 
 ## Vollständiges Beispiel aus der Balena-Dokumentation. Ggf. wichtig als Vorlage,
 ## falls der direkte Hardwarezugriff in einem der Container nicht funktioniert.
