@@ -11,7 +11,7 @@ GPIO.setup(LED_ROT, GPIO.OUT, initial= GPIO.LOW)
 GPIO.setup(LED_GRUEN, GPIO.OUT, initial= GPIO.LOW)
    
 print "LED-Test [druecken Sie STRG+C, um den Test zu beenden]"
-  
+#test
 # Hauptprogrammschleife
 try:
         while True:
