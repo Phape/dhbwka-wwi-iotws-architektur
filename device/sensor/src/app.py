@@ -79,7 +79,6 @@ class App:
                     mesaurement = self._perform_mesaurement()
                     self._save_measurement(mesaurement)
                     #mesaurement = self._switch_pressed()
-                
 
                 interval_seconds = self._read_measurement_interval()
                 time.sleep(interval_seconds)
