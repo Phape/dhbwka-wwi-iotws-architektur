@@ -79,7 +79,7 @@ class App:
                     mesaurement = self._perform_mesaurement()
                     self._save_measurement(mesaurement)
                     #mesaurement = self._switch_pressed()
-                GPIO.add_event_detect(self.SP, GPIO.FALLING, callback=self._switch_pressed, bouncetime=50)
+                
 
                 interval_seconds = self._read_measurement_interval()
                 time.sleep(interval_seconds)
@@ -160,7 +160,7 @@ class App:
         self._logger.info("Speichere Messwerte: %s" % self._pp.pformat(measurement))
         self._redis.xadd(REDIS_KEY_MEASUREMENT_VALUES, measurement)
     
-    #KY-040 Kodierter Drehregler
+    #KY-040 Kodierter Drehregler-Modul
     def _switch_pressed(self):
         if(GPIO.input(self.SP) == 0):
             self.lock = 1
@@ -168,6 +168,7 @@ class App:
         if(GPIO.input(self.SP) == 1):
             self.lock = 0
             self._logger.info("Aufgeschlossen")
+    GPIO.add_event_detect(SP, GPIO.FALLING, callback=_switch_pressed, bouncetime=50)
 
 if __name__ == "__main__":
     configfile = "app.conf"
