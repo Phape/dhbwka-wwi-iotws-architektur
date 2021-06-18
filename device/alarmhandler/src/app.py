@@ -71,6 +71,7 @@ class App:
                 self._redis.set(REDIS_ALERT_ENABLED, "1")
             else:
                 self._logger.info("Alles ist sicher. Es wurde kein Alarm ausgelöst.")
+                self._redis.set(REDIS_ALERT_ENABLED, "0")
 
         else:
             self._logger.info("Problem bei Alarmierungslogik aufgetreten.")
