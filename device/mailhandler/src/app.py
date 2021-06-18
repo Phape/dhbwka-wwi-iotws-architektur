@@ -70,12 +70,12 @@ class App:
 
                 if not last_alert_time:
                     self._logger.info("Keine letze Alarm-Mail-Zeit gefunden. Benachrichtige Nutzer per Mail.")
-                    self.send_mail() # Parametrisieren, Hier Mail schicken, dass Alarmanlage in Betrieb ist
+                    self._send_mail() # Parametrisieren, Hier Mail schicken, dass Alarmanlage in Betrieb ist
                     self._redis.set(REDIS_LAST_MAIL_ALERT_TIME, time.time())
 
                 if alert_enabled and time.time - last_alert_time > 3600: # alarm cooldown: 1h
                     self._logger.info("Alarm ist " + alert_enabled + ", Mail wird versendet.")
-                    self.send_mail()
+                    self._send_mail()
                     self._redis.set(REDIS_LAST_MAIL_ALERT_TIME, time.time())
                 else: 
                     time.sleep(10)
@@ -95,7 +95,7 @@ class App:
             return False
 
 
-    def send_mail(self):
+    def _send_mail(self):
         message = """\
         Subject: Hallo
         Diese Nachricht wurde mit Python gesendet."""
