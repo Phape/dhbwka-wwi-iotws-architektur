@@ -1,0 +1,4 @@
+redis
+virtualenv
+virtualenvwrapper
+opencv-python
