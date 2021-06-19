@@ -3,6 +3,7 @@ import redis
 
 REDIS_ALERT_SYSTEM_ACTIVE = "system:active"
 REDIS_ALERT_ENABLED = "alert:enabled"
+REDIS_KEY_MEASUREMENT_VALUES   = "measurement:values"
 
 class App:
     def __init__(self, configfile):
@@ -84,8 +85,12 @@ class App:
             bool: Wahr, wenn ein Alarm ausgelöst werden soll
         """
         enable_alert = False
+
         # Hier Logik, die entscheidet, ob ein Alarm ausgelöst wird, bspw. Sensor 1 = 1 and Sensor 2 = 1
         self._logger.info("Prüfe, ob ein Alarm ausgelöst wird...")
+        if self._is_camera_recognized_person() and self._is_movement_detected():
+            self._logger.info("Kamera hat Person(en) erkannt und Bewegung wurde erkannt. Alarm wird aktiviert.")
+            enable_alert = True
 
         return enable_alert
 
@@ -113,6 +118,23 @@ class App:
         else:
             return False
 
+    def _is_camera_recognized_person(self):
+        last_measurements = self._redis.xrevrange(name=REDIS_KEY_MEASUREMENT_VALUES, min="-", max="+", count=5)
+
+        VALUES_INDEX = 1
+        for entry in last_measurements:
+            if "persons" in entry[VALUES_INDEX]:
+                numer_of_persons = int(entry[VALUES_INDEX]["persons"])
+                return True if numer_of_persons > 0 else False
+
+    def _is_movement_detected(self):
+        last_measurements = self._redis.xrevrange(name=REDIS_KEY_MEASUREMENT_VALUES, min="-", max="+", count=5)
+
+        VALUES_INDEX = 1
+        for entry in last_measurements:
+            if "movement" in entry[VALUES_INDEX]:
+                movement_detected = int(entry[VALUES_INDEX]["movement"])
+                return True if movement_detected > 0 else False
 
 if __name__ == "__main__":
     configfile = "app.conf"
