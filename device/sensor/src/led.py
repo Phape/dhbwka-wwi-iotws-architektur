@@ -14,14 +14,14 @@ print "LED-Test [druecken Sie STRG+C, um den Test zu beenden]"
 # Hauptprogrammschleife
 try:
         while True:
-            print("LED ROT 3 Sekunden an")
-            GPIO.output(LED_ROT,GPIO.HIGH) #LED wird eingeschaltet
-            GPIO.output(LED_GRUEN,GPIO.LOW) #LED wird eingeschaltet
-            time.sleep(3) # Wartemodus fuer 4 Sekunden
-            print("LED GRUEN 3 Sekunden an") 
-            GPIO.output(LED_ROT,GPIO.LOW) #LED wird eingeschaltet
-            GPIO.output(LED_GRUEN,GPIO.HIGH) #LED wird eingeschaltet
-            time.sleep(3) #Wartemodus fuer weitere zwei Sekunden, in denen die LED Dann ausgeschaltet ist
+            #print("LED ROT 3 Sekunden an")
+            GPIO.output(LED_ROT,GPIO.HIGH) #LED rot wird eingeschaltet
+            #GPIO.output(LED_GRUEN,GPIO.LOW) #LED grün wird ausgeschaltet
+            time.sleep(1) # Wartemodus fuer 2 Sekunden
+            #print("LED GRUEN 3 Sekunden an") 
+            GPIO.output(LED_ROT,GPIO.LOW) #LED rot wird ausgeschaltet
+            #GPIO.output(LED_GRUEN,GPIO.HIGH) #LED grün wird eingeschaltet
+            time.sleep(2) #Wartemodus fuer weitere zwei Sekunden, in denen die LED Dann ausgeschaltet ist
    
 # Aufraeumarbeiten nachdem das Programm beendet wurde
 except KeyboardInterrupt:
