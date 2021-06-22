@@ -4,6 +4,7 @@ volumes:
     redis-data:
     grafana-data:
     zigbee2mqtt-data:
+    camera-data:
 
 services:
     # Redis Key-Value Store
@@ -85,6 +86,8 @@ services:
         build: ./camera
         privileged: true
         restart: always
+        volumes:
+         - camera-data:/data
         devices:
             - /dev/video0:/dev/video0
         depends_on:

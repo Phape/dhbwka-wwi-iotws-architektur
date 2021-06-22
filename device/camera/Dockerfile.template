@@ -37,11 +37,9 @@ RUN pip3 install --upgrade pip
 
 COPY requirements.txt .
 RUN pip3 install --no-cache-dir -r requirements.txt
-#RUN virtualenv cv
 
-
-COPY app.conf .
-COPY ./src .
-COPY ./model .
+COPY app.conf ./
+COPY ./src ./
+COPY ./model ./
 
 CMD ["python3", "app.py"]
