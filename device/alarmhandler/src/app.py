@@ -134,7 +134,8 @@ class App:
         for entry in last_measurements:
             if "movement" in entry[VALUES_INDEX]:
                 movement_detected = int(entry[VALUES_INDEX]["movement"])
-                return True if movement_detected > 0
+                if movement_detected > 0:
+                    return True
         return False
     
 if __name__ == "__main__":
