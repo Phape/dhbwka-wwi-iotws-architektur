@@ -78,7 +78,7 @@ class App:
         #pin_button = 0
         #PIN_CLK_AKTUELL = 0
         #PIN_CLK_LETZTER = 0
-        Counter = 0
+        # Counter = 0
         Richtung = True
 
     def main(self):
@@ -88,7 +88,7 @@ class App:
         """
 
         GPIO.add_event_detect(self.pin_clk, GPIO.BOTH, callback=self.ausgabeFunktion, bouncetime=50)
-        #GPIO.add_event_detect(self.pin_button, GPIO.FALLING, callback=self.CounterReset, bouncetime=50)
+        GPIO.add_event_detect(self.pin_button, GPIO.FALLING, callback=self.CounterReset, bouncetime=50)
         try:
             while True:
                 time.sleep(10)
@@ -116,18 +116,18 @@ class App:
             self._redis.set(REDIS_KEY_MEASUREMENT_ENABLED, "1")
     
     def ausgabeFunktion(self, null):
-        global Counter
+        # global Counter
 
         PIN_CLK_AKTUELL = GPIO.input(self.pin_clk)
         
         if PIN_CLK_AKTUELL != self.PIN_CLK_LETZTER:
 
             if GPIO.input(self.pin_dt) != PIN_CLK_AKTUELL:
-                self.Counter += 1
+                # self.Counter += 1
                 Richtung = True
             else:
                 Richtung = False
-                Counter = self.Counter - 1
+                # Counter = self.Counter - 1
             
             self._logger.info("Drehung erkannt: ")
             if Richtung:
@@ -137,17 +137,18 @@ class App:
                 self._logger.info("Drehrichtung: Gegen den Uhrzeigersinn")
                 self._redis.set(REDIS_KEY_MEASUREMENT_ENABLED, "1")
 
-            self._logger.info("------------------------------")
-        self._logger.info("ausgabeFunktion")
-        self._logger.info(PIN_CLK_AKTUELL)
-        self._logger.info(self.PIN_CLK_LETZTER)
-        self._logger.info(GPIO.input(self.pin_clk))
-        self._logger.info(GPIO.input(self.pin_dt))
-        self._logger.info(GPIO.input(self.pin_button))
-    #def CounterReset(self, null):
+            # self._logger.info("------------------------------")
+        # self._logger.info("ausgabeFunktion")
+        # self._logger.info(PIN_CLK_AKTUELL)
+        # self._logger.info(self.PIN_CLK_LETZTER)
+        # self._logger.info(GPIO.input(self.pin_clk))
+        # self._logger.info(GPIO.input(self.pin_dt))
+        # self._logger.info(GPIO.input(self.pin_button))
+
+    def CounterReset(self, null):
     #    global Counter
 
-    #    self._logger.info("Alarm deaktivieren!")
+       self._logger.info("Alarm deaktivieren!")
     #    self._logger.info("------------------------------")
     #    Counter = 0
     # Um einen Debounce direkt zu integrieren, werden die Funktionen zur Ausgabe mittels
