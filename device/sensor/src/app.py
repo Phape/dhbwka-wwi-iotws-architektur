@@ -3,6 +3,7 @@
 import redis
 import configparser, logging, pprint, os, random, sys, time
 import RPi.GPIO as GPIO 
+import time
 
 REDIS_KEY_MEASUREMENT_INTERVAL = "measurement:interval"
 REDIS_KEY_MEASUREMENT_ENABLED  = "measurement:enabled"
@@ -58,16 +59,8 @@ class App:
         # GPIO initialisieren
         GPIO.setmode(GPIO.BCM)
         self.PIR = 18    # Bewegungssensor GPIO Pin
-        self.CLK = 5    # Drehschalter GPIO Clockpin
-        self.DT = 6     # Drehschalter GPIO Datapin
-        self.SP = 13    # Drehschalter GPIO Switchpin
         GPIO.setup(self.PIR, GPIO.IN)
-        GPIO.setup(self.SP, GPIO.IN, pull_up_down = GPIO.PUD_UP)
-
-        # Variablen
-        self.lock = 0 # Variable für Türschloss-Simulation
-
-
+    
     def main(self):
         """
         Hauptverarbeitung des Skripts. Startet eine Endlosschleife zur Messung der
@@ -78,7 +71,6 @@ class App:
                 if self._is_measurement_enabled():
                     mesaurement = self._perform_mesaurement()
                     self._save_measurement(mesaurement)
-                    #mesaurement = self._switch_pressed()
 
                 interval_seconds = self._read_measurement_interval()
                 time.sleep(interval_seconds)
@@ -133,9 +125,7 @@ class App:
         """
         self._logger.info("Starte neue Messung")
 
-        # Beispiel: Wir "messen" eine Zufallszahl. :-)
         return {
-            #"random": random.randint(1, 99),
             "movement": self._detect_movement()
         }
 
@@ -158,16 +148,6 @@ class App:
         """
         self._logger.info("Speichere Messwerte: %s" % self._pp.pformat(measurement))
         self._redis.xadd(REDIS_KEY_MEASUREMENT_VALUES, measurement)
-    
-    #KY-040 Kodierter Drehregler-Modul
-    def _switch_pressed(self):
-        if(GPIO.input(self.SP) == 0):
-            self.lock = 1
-            self._logger.info("Abgeschlossen")
-        if(GPIO.input(self.SP) == 1):
-            self.lock = 0
-            self._logger.info("Aufgeschlossen")
-    GPIO.add_event_detect(SP, GPIO.FALLING, callback=_switch_pressed, bouncetime=50)
 
 if __name__ == "__main__":
     configfile = "app.conf"
