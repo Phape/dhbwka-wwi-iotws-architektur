@@ -3,6 +3,7 @@
 import redis
 import configparser, logging, pprint, os, sys, time
 import RPi.GPIO as GPIO 
+import time
 
 REDIS_KEY_MEASUREMENT_INTERVAL = "measurement:interval"
 REDIS_ALERT_SYSTEM_ACTIVE = "system:active"
@@ -59,8 +60,7 @@ class App:
         GPIO.setmode(GPIO.BCM)
         self.PIR = 18    # Bewegungssensor GPIO Pin
         GPIO.setup(self.PIR, GPIO.IN)
-
-
+    
     def main(self):
         """
         Hauptverarbeitung des Skripts. Startet eine Endlosschleife zur Messung der
