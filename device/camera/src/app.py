@@ -7,8 +7,6 @@ import numpy as np
 REDIS_KEY_MEASUREMENT_INTERVAL = "measurement:interval"
 REDIS_KEY_MOVEMENT_DETECTED  = "measurement:enabled"
 REDIS_KEY_MEASUREMENT_VALUES   = "measurement:values"
-#TODO: Confidence in Redis hinterlegen
-#REDIS_KEY_MEASUREMENT_CONFIDENCE = "measurement:confidence"
 
 class CameraDevice():
     
@@ -181,7 +179,7 @@ class App:
             pass
         
     def _is_movement_detected(self):
-        last_measurements = self._redis.xrevrange(name=REDIS_KEY_MEASUREMENT_VALUES, min="-", max="+", count=5)
+        last_measurements = self._redis.xrevrange(name=REDIS_KEY_MEASUREMENT_VALUES, min="-", max="+", count=3)
 
         VALUES_INDEX = 1
         for entry in last_measurements:
