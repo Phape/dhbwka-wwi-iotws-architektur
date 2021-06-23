@@ -5,7 +5,7 @@ import configparser, logging, pprint, os, random, sys, time, cv2, platform
 import numpy as np
 
 REDIS_KEY_MEASUREMENT_INTERVAL = "measurement:interval"
-REDIS_KEY_MOVEMENT_DETECTED  = "measurement:enabled"
+REDIS_ALERT_SYSTEM_ACTIVE  = "system:active"
 REDIS_KEY_MEASUREMENT_VALUES   = "measurement:values"
 
 class CameraDevice():
@@ -169,7 +169,7 @@ class App:
         """
         try:
             while True:
-                if self._is_movement_detected():
+                if self._is_alert_system_active() and self._is_movement_detected():
                     measurement = self._perform_measurement()
                     self._save_measurement(measurement)
 
@@ -189,6 +189,17 @@ class App:
                     return True
         return False
 
+    def _is_alert_system_active(self):
+        """Prüft, ob das Alarmsystem scharfgestellt ist.
+
+        Returns:
+            bool: Wahr, wenn das Alarmsystem aktiviert ist.
+        """
+        if self._redis.get(REDIS_ALERT_SYSTEM_ACTIVE) == "1":
+            return True
+        else:
+            return False
+    
     def _read_measurement_interval(self):
         """
         Liest den Eintrag REDIS_KEY_MEASUREMENT_INTERVAL in Redis mit der Anzahl Sekunden
