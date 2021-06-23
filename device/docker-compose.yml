@@ -4,6 +4,7 @@ volumes:
     redis-data:
     grafana-data:
     zigbee2mqtt-data:
+    camera-data:
 
 services:
     # Redis Key-Value Store
@@ -28,16 +29,16 @@ services:
             - REDIS_DB=0
     
     # Programm zur Auswertung des Start/Stop-Hardwarebuttons
-    # startstopbutton:
-    #     build: startstopbutton/
-    #     privileged: true
-    #     restart: always
-    #     depends_on:
-    #         - redis
-    #     environment:
-    #         - REDIS_HOST=redis
-    #         - REDIS_PORT=6379
-    #         - REDIS_DB=0
+    startstopbutton:
+        build: startstopbutton/
+        privileged: true
+        restart: always
+        depends_on:
+            - redis
+        environment:
+            - REDIS_HOST=redis
+            - REDIS_PORT=6379
+            - REDIS_DB=0
     
     # Programm zum öffentlichen Datenaustausch via MQTT
     mqtthandler:
@@ -85,6 +86,8 @@ services:
         build: ./camera
         privileged: true
         restart: always
+        volumes:
+         - camera-data:/data
         devices:
             - /dev/video0:/dev/video0
         depends_on:

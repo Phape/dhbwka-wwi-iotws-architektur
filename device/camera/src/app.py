@@ -5,9 +5,8 @@ import configparser, logging, pprint, os, random, sys, time, cv2, platform
 import numpy as np
 
 REDIS_KEY_MEASUREMENT_INTERVAL = "measurement:interval"
-REDIS_KEY_MEASUREMENT_ENABLED  = "measurement:enabled"
+REDIS_ALERT_SYSTEM_ACTIVE  = "system:active"
 REDIS_KEY_MEASUREMENT_VALUES   = "measurement:values"
-#REDIS_KEY_MEASUREMENT_CONFIDENCE = "measurement:confidence"
 
 class CameraDevice():
     
@@ -155,7 +154,6 @@ class App:
 
         # Voreingestelltes Messintervall
         self._interval_seconds = float(os.getenv("INTERVAL_SECONDS") or self._config["measurement"]["interval_seconds"])
-        self._enabled = True
 
         # Objecterkennungsmodell Laden
         proto_file = r"./mobilenet.prototxt"
@@ -171,7 +169,7 @@ class App:
         """
         try:
             while True:
-                if self._is_measurement_enabled():
+                if self._is_alert_system_active() and self._is_movement_detected():
                     measurement = self._perform_measurement()
                     self._save_measurement(measurement)
 
@@ -180,28 +178,28 @@ class App:
         except KeyboardInterrupt:
             pass
         
+    def _is_movement_detected(self):
+        last_measurements = self._redis.xrevrange(name=REDIS_KEY_MEASUREMENT_VALUES, min="-", max="+", count=3)
 
-    def _is_measurement_enabled(self):
+        VALUES_INDEX = 1
+        for entry in last_measurements:
+            if "movement" in entry[VALUES_INDEX]:
+                movement_detected = int(entry[VALUES_INDEX]["movement"])
+                if movement_detected > 0 :
+                    return True
+        return False
+
+    def _is_alert_system_active(self):
+        """Prüft, ob das Alarmsystem scharfgestellt ist.
+
+        Returns:
+            bool: Wahr, wenn das Alarmsystem aktiviert ist.
         """
-        Prüft den Eintrag REDIS_KEY_MEASUREMENT_ENABLED in Redis, um festzustellen,
-        ob überhaupt Messungen vorgenommen werden sollen. Jeder Wert ungleich dem
-        String "0" wird dabei als Ja interpretiert. Fehlt der Eintrag, wird der in
-        self._enabled hinterlegte, zuletzt bekannte Werte verwendet.
-        """
-
-        enabled = self._redis.get(REDIS_KEY_MEASUREMENT_ENABLED)
-
-        if enabled == None:
-            return self._enabled
-
-        enabled = enabled != "0"
-        
-        if not enabled == self._enabled:
-            self._enabled = enabled
-            self._logger.info("Messung wird fortgeführt" if enabled else "Messung wird unterbrochen")
-
-        return enabled
-
+        if self._redis.get(REDIS_ALERT_SYSTEM_ACTIVE) == "1":
+            return True
+        else:
+            return False
+    
     def _read_measurement_interval(self):
         """
         Liest den Eintrag REDIS_KEY_MEASUREMENT_INTERVAL in Redis mit der Anzahl Sekunden
@@ -247,8 +245,12 @@ class App:
         persons = ssd.get_objects(image, obj_data, person_class, 0.85)
         self._logger.info("Person count on the image: "+str(len(persons)))
 
-        #TODO: Evtl Absprache bei der Erkennung einer Person das Bild speichern
-        #Utils.draw_objects(persons, "PERSON", (0, 0, 255), image)
+        #Erkannter Mensch führt zum Abspeichern des Bildes in
+        if len(persons) != 0:
+            timestr = time.strftime("%c", time.localtime())
+            img_name = "/data/" + timestr + ".jpg"
+            encode_param = (int(cv2.IMWRITE_JPEG_QUALITY), 90)
+            cv2.imwrite(img_name, image, encode_param)
 
         return {
             "persons": len(persons)
