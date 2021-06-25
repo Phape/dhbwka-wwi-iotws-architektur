@@ -19,6 +19,10 @@ services:
         restart: always
         environment:
             MYSQL_ROOT_PASSWORD: example
+        # volumes:
+        #     - ./mariadb/conf:/etc/mysql/conf.d
+        ports:
+            - "3306:3306"
 
     # Datenbank Web-Administration
     adminer:
@@ -26,3 +30,17 @@ services:
         restart: always
         ports:
         - 8080:8080
+
+    mqtt2mysql:
+        image: davidlor/python-autoclonable-app
+        depends_on: 
+            - db
+        environment: 
+            - GIT_REPOSITORY=https://github.com/David-Lor/MQTT2MySQL.git
+            - GIT_BRANCH=master
+            - APP_NAME=MQTT2MySQL
+            - SQL_USER=root
+            - SQL_PASSWORD=example
+            - SQL_DATABASE=mqtt
+            - SQL_HOST=0.0.0.0
+            - SQL_PORT=3306
