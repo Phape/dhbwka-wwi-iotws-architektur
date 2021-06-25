@@ -123,7 +123,7 @@ services:
 
     # Aktoren
     actuator:
-        build: sensor/
+        build: actuator/
         privileged: true
         restart: always
         depends_on:
