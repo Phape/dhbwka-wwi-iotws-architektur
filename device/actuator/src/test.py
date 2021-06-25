@@ -1,7 +1,6 @@
 import os, sys, logging, configparser, time
 import redis
 import RPi.GPIO as GPIO
-import time
 
 LED_ROT = 24
 LED_GRUEN = 23
@@ -9,6 +8,7 @@ Buzzer_PIN = 25
 
 GPIO.setup(LED_ROT, GPIO.OUT, initial= GPIO.LOW)
 GPIO.setup(LED_GRUEN, GPIO.OUT, initial= GPIO.LOW)
+GPIO.setup(Buzzer_PIN, GPIO.OUT, initial= GPIO.LOW)
 
 REDIS_ALERT_SYSTEM_ACTIVE = "system:active" # Für grüne LED
 REDIS_ALERT_ENABLED = "alert:enabled" # Für rote LED + Lautsprecher
