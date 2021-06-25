@@ -116,34 +116,23 @@ class App:
             self._redis.set(REDIS_KEY_MEASUREMENT_ENABLED, "1")
     
     def ausgabeFunktion(self, null):
-        # global Counter
 
         PIN_CLK_AKTUELL = GPIO.input(self.pin_clk)
         
         if PIN_CLK_AKTUELL != self.PIN_CLK_LETZTER:
 
             if GPIO.input(self.pin_dt) != PIN_CLK_AKTUELL:
-                # self.Counter += 1
                 Richtung = True
             else:
                 Richtung = False
-                # Counter = self.Counter - 1
             
             self._logger.info("Drehung erkannt: ")
             if Richtung:
-                self._logger.info("Drehrichtung: Im Uhrzeigersinn")
+                self._logger.info("Drehrichtung: Im Uhrzeigersinn -> Tür ist aufgeschlossen")
                 self._redis.set(REDIS_KEY_MEASUREMENT_ENABLED, "0")
             else:
-                self._logger.info("Drehrichtung: Gegen den Uhrzeigersinn")
+                self._logger.info("Drehrichtung: Gegen den Uhrzeigersinn -> Tür ist abgeschlossen")
                 self._redis.set(REDIS_KEY_MEASUREMENT_ENABLED, "1")
-
-            # self._logger.info("------------------------------")
-        # self._logger.info("ausgabeFunktion")
-        # self._logger.info(PIN_CLK_AKTUELL)
-        # self._logger.info(self.PIN_CLK_LETZTER)
-        # self._logger.info(GPIO.input(self.pin_clk))
-        # self._logger.info(GPIO.input(self.pin_dt))
-        # self._logger.info(GPIO.input(self.pin_button))
 
     def CounterReset(self, null):
     #    global Counter
