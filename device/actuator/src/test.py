@@ -6,6 +6,8 @@ LED_ROT = 24
 LED_GRUEN = 23
 Buzzer_PIN = 25 
 
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
 GPIO.setup(LED_ROT, GPIO.OUT, initial= GPIO.LOW)
 GPIO.setup(LED_GRUEN, GPIO.OUT, initial= GPIO.LOW)
 GPIO.setup(Buzzer_PIN, GPIO.OUT, initial= GPIO.LOW)
@@ -53,7 +55,7 @@ class App:
 
     def main(self):
         system_active = self._is_alert_system_active()
-        print("alert system active von Redis: " + self._redis.get(REDIS_ALERT_SYSTEM_ACTIVE) + " variable: " + str(system_active))
+        #print("alert system active von Redis: " + self._redis.get(REDIS_ALERT_SYSTEM_ACTIVE) + " variable: " + str(system_active))
 
         try:
             while True:
