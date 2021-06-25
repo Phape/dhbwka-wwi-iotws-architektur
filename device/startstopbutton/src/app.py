@@ -152,7 +152,6 @@ class App:
             self._logger.info("Signal erkannt")
         else:
             pass
-        #self._logger.info(status_tuer)
 
 if __name__ == "__main__":
     configfile = "app.conf"
