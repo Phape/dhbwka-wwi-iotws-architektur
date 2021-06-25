@@ -58,16 +58,22 @@ class App:
         self.pin_dt        = os.getenv("BUTTON_DT")           or self._config["button"]["PIN_DT"]
         self.pin_button    = os.getenv("BUTTON_PIN")           or self._config["button"]["BUTTON_PIN"]
 
+        self.pin_sig       = os.getenv("BUTTON_SIG")           or self._config["button"]["PIN_SIG"]
+
         #bounce_millis = int(bounce_millis)
         self.pin_clk = int(self.pin_clk)
         self.pin_dt = int(self.pin_dt)
         self.pin_button = int(self.pin_button)
+
+        self.pin_sig = int(self.pin_sig)
 
         GPIO.setmode(GPIO.BCM)
 
         GPIO.setup(self.pin_clk, GPIO.IN, pull_up_down = GPIO.PUD_UP)
         GPIO.setup(self.pin_dt, GPIO.IN, pull_up_down = GPIO.PUD_UP)
         GPIO.setup(self.pin_button, GPIO.IN, pull_up_down = GPIO.PUD_UP)
+
+        GPIO.setup(self.pin_sig, GPIO.IN, pull_up_down = GPIO.PUD_DOWN)
 
         # Initiales Auslesen des Pin_CLK
         self.PIN_CLK_LETZTER = GPIO.input(self.pin_clk)
@@ -89,6 +95,9 @@ class App:
 
         GPIO.add_event_detect(self.pin_clk, GPIO.BOTH, callback=self.ausgabeFunktion, bouncetime=50)
         GPIO.add_event_detect(self.pin_button, GPIO.FALLING, callback=self.CounterReset, bouncetime=50)
+
+        GPIO.add_event_detect(self.pin_sig, GPIO.RISING, callback=self.lichtschrankeFunktion, bouncetime=100)
+
         try:
             while True:
                 time.sleep(10)
@@ -128,21 +137,22 @@ class App:
             
             self._logger.info("Drehung erkannt: ")
             if Richtung:
-                self._logger.info("Drehrichtung: Im Uhrzeigersinn -> Tür ist aufgeschlossen")
+                self._logger.info("Drehrichtung: Im Uhrzeigersinn -> Tuer ist aufgeschlossen")
                 self._redis.set(REDIS_KEY_MEASUREMENT_ENABLED, "0")
             else:
-                self._logger.info("Drehrichtung: Gegen den Uhrzeigersinn -> Tür ist abgeschlossen")
+                self._logger.info("Drehrichtung: Gegen den Uhrzeigersinn -> Tuer ist abgeschlossen")
                 self._redis.set(REDIS_KEY_MEASUREMENT_ENABLED, "1")
 
     def CounterReset(self, null):
-    #    global Counter
-
        self._logger.info("Alarm deaktivieren!")
-    #    self._logger.info("------------------------------")
-    #    Counter = 0
-    # Um einen Debounce direkt zu integrieren, werden die Funktionen zur Ausgabe mittels
-    # CallBack-Option vom GPIO Python Modul initialisiert
     
+    def lichtschrankeFunktion(self, null):
+        status_tuer = self._redis.get(REDIS_KEY_MEASUREMENT_ENABLED)
+        if status_tuer == "1":
+            self._logger.info("Signal erkannt")
+        else:
+            pass
+        #self._logger.info(status_tuer)
 
 if __name__ == "__main__":
     configfile = "app.conf"

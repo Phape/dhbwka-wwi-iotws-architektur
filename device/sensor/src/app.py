@@ -59,7 +59,7 @@ class App:
         # GPIO initialisieren
         GPIO.setmode(GPIO.BCM)
         self.PIR = 18    # Bewegungssensor GPIO Pin
-        GPIO.setup(self.PIR, GPIO.IN)
+        GPIO.setup(self.PIR, GPIO.IN)        
     
     def main(self):
         """
