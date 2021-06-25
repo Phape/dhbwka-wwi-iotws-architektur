@@ -1,5 +1,14 @@
 import os, sys, logging, configparser, time
 import redis
+import RPi.GPIO as GPIO
+import time
+
+LED_ROT = 24
+LED_GRUEN = 23
+Buzzer_PIN = 25 
+
+GPIO.setup(LED_ROT, GPIO.OUT, initial= GPIO.LOW)
+GPIO.setup(LED_GRUEN, GPIO.OUT, initial= GPIO.LOW)
 
 REDIS_ALERT_SYSTEM_ACTIVE = "system:active" # Für grüne LED
 REDIS_ALERT_ENABLED = "alert:enabled" # Für rote LED + Lautsprecher
@@ -19,6 +28,7 @@ class App:
         console_handler = logging.StreamHandler()
         console_handler.setFormatter(formatter)
         self._logger.addHandler(console_handler)
+
 
         # Konfigurationsdatei einlesen
         self._logger.info("Lese Konfigurationsdatei app.conf")
@@ -49,12 +59,21 @@ class App:
             while True:
                 if self._is_alert_system_active():
                     if self._is_alert_enabled():
-                        # LED soll rot blinken
-                        pass
+                        # LED soll rot leuchten
+                         GPIO.output(LED_GRUEN,GPIO.LOW) #LED gruen wird ausgeschaltet
+                         GPIO.output(LED_ROT,GPIO.HIGH) #LED rot wird eingeschaltet
+                         GPIO.output(Buzzer_PIN,GPIO.HIGH) #Buzzer geht an
+                         self._logger.info("Alarm aktiviert LED leuchtet rot")
                     else:
                         # LED soll grün leuchten
-                        pass
+                         GPIO.output(Buzzer_PIN,GPIO.LOW) #Buzzer geht aus
+                         GPIO.output(LED_ROT,GPIO.LOW) #LED rot wird ausgeschaltet
+                         GPIO.output(LED_GRUEN,GPIO.HIGH) #LED gruen wird eingeschaltet
+                         self._logger.info("Alarmsystem aktiviert LED leuchtet gruen ")
+                else:
+                    GPIO.output(LED_GRUEN,GPIO.LOW) #LED gruen wird ausgeschaltet
                 time.sleep(10)
+                
 
         except KeyboardInterrupt:
             pass
