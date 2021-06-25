@@ -12,3 +12,17 @@ services:
             - "1883:1883"
             - "9001:9001"
 
+
+
+  # Use root/example as user/password credentials
+    db:
+        image: mariadb
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: example
+
+    adminer:
+        image: adminer
+        restart: always
+        ports:
+        - 8080:8080
