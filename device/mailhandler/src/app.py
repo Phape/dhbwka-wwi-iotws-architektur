@@ -1,7 +1,8 @@
 import smtplib, ssl
-from socket import gaierror
 import os, sys, logging, configparser, time, datetime
 import redis
+import mimetypes
+from email.message import EmailMessage
 
 REDIS_ALERT_ENABLED = "alert:enabled"
 REDIS_LAST_MAIL_ALERT_TIME = "alert:last"
@@ -96,38 +97,41 @@ class App:
 
 
     def _send_mail(self):
+
         message = """\
-        Subject: Hallo
         Diese Nachricht wurde mit Python gesendet."""
 
-        try:
-            # context = ssl.create_default_context()
-            with smtplib.SMTP(
-                self._mail_server_config["host"], self._mail_server_config["port"]
-            ) as server:
-                # server.starttls(context=context)
-                server.login(
-                    self._mail_server_config["user"],
-                    self._mail_server_config["password"],
-                )
-                server.sendmail(
-                    self._mail_server_config["from_addr"],
-                    self._mail_server_config["to_addrs"],
-                    message,
-                )
+        #Email Message erstellen
+        msg = EmailMessage()
+        msg['Subject'] = 'Intruder Alert!'
+        msg['From'] = self._mail_server_config["from_addr"]
+        msg['To'] = self._mail_server_config["to_addrs"]
+        # Set text content
+        msg.set_content(message)
 
-            self._logger.info("Gesendet")
+        _attach_file_to_email(msg, "/data/intruder.jpg")
 
-        except (gaierror, ConnectionRefusedError):
-            self._logger.warn(
-                "Verbindung zum Server fehlgeschlagen. Sind alle Verbindungseinstellungen korrekt?"
-            )
-        except smtplib.SMTPServerDisconnected:
-            self._logger.warn(
-                "Verbindung zum Server fehlgeschlagen. Falscher Nutzer/Passwort?"
-            )
-        except smtplib.SMTPException as e:
-            self._logger.warn("SMTP Error: " + str(e))
+        _send_mail_smtp(msg,self._mail_server_config["host"], self._mail_server_config["port"], self._mail_server_config["user"],self._mail_server_config["password"])
+        _delete_attached_file("/data/intruder.jpg")
+
+    def _attach_file_to_email(email, filename):
+        """Attach a file identified by filename, to an email message"""
+        if os.path.isfile(filename):
+            with open(filename, 'rb') as fp:
+                file_data = fp.read()
+                maintype, _, subtype = (mimetypes.guess_type(filename)[0] or 'application/octet-stream').partition("/")
+                email.add_attachment(file_data, maintype=maintype, subtype=subtype, filename=filename)
+
+    def _send_mail_smtp(mail, host, port, username, password):
+        s = smtplib.SMTP(host, port)
+        s.starttls()
+        s.login(username, password)
+        s.send_message(mail)
+        s.quit()
+
+    def _delete_attached_file(filename):
+        if os.path.exists(filename):
+            os.remove(filename)
 
 
 if __name__ == "__main__":
