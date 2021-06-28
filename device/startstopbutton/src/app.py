@@ -52,20 +52,14 @@ class App:
 
         pull_up_down  = os.getenv("BUTTON_PULL_UP_DOWN")  or self._config["button"]["pull_up_down"]
         event         = os.getenv("BUTTON_EVENT")         or self._config["button"]["event"]
-        #bounce_millis = os.getenv("BUTTON_BOUNCE_MILLIS") or self._config["button"]["bounce_millis"]
 
         self.pin_clk       = os.getenv("BUTTON_CLK")           or self._config["button"]["PIN_CLK"]
         self.pin_dt        = os.getenv("BUTTON_DT")           or self._config["button"]["PIN_DT"]
         self.pin_button    = os.getenv("BUTTON_PIN")           or self._config["button"]["BUTTON_PIN"]
 
-        self.pin_sig       = os.getenv("BUTTON_SIG")           or self._config["button"]["PIN_SIG"]
-
-        #bounce_millis = int(bounce_millis)
         self.pin_clk = int(self.pin_clk)
         self.pin_dt = int(self.pin_dt)
         self.pin_button = int(self.pin_button)
-
-        self.pin_sig = int(self.pin_sig)
 
         GPIO.setmode(GPIO.BCM)
         #Drehschalter-Pins
@@ -73,19 +67,9 @@ class App:
         GPIO.setup(self.pin_dt, GPIO.IN, pull_up_down = GPIO.PUD_UP)
         GPIO.setup(self.pin_button, GPIO.IN, pull_up_down = GPIO.PUD_UP)
 
-        #Lichtschranke-Pin
-        GPIO.setup(self.pin_sig, GPIO.IN, pull_up_down = GPIO.PUD_DOWN)
-
         # Initiales Auslesen des Pin_CLK
         self.PIN_CLK_LETZTER = GPIO.input(self.pin_clk)
 
-        # Variablen
-        #pin_clk = 0
-        #pin_dt = 0
-        #pin_button = 0
-        #PIN_CLK_AKTUELL = 0
-        #PIN_CLK_LETZTER = 0
-        # Counter = 0
         Richtung = True
 
     def main(self):
@@ -96,8 +80,6 @@ class App:
 
         GPIO.add_event_detect(self.pin_clk, GPIO.BOTH, callback=self.ausgabeFunktion, bouncetime=50)
         GPIO.add_event_detect(self.pin_button, GPIO.FALLING, callback=self.CounterReset, bouncetime=50)
-
-        GPIO.add_event_detect(self.pin_sig, GPIO.RISING, callback=self.lichtschrankeFunktion, bouncetime=100)
 
         try:
             while True:
@@ -146,13 +128,6 @@ class App:
 
     def CounterReset(self, null):
        self._logger.info("Alarm deaktivieren!")
-    
-    def lichtschrankeFunktion(self, null):
-        status_tuer = self._redis.get(REDIS_KEY_MEASUREMENT_ENABLED)
-        if status_tuer == "1":
-            self._logger.info("Signal erkannt")
-        else:
-            pass
 
 if __name__ == "__main__":
     configfile = "app.conf"
