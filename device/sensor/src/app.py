@@ -59,7 +59,9 @@ class App:
         # GPIO initialisieren
         GPIO.setmode(GPIO.BCM)
         self.PIR = 18    # Bewegungssensor GPIO Pin
-        GPIO.setup(self.PIR, GPIO.IN)
+        self.SIG = 22    # Lichtschranke GPIO Pin
+        GPIO.setup(self.PIR, GPIO.IN) 
+        GPIO.setup(self.SIG, GPIO.IN, pull_up_down = GPIO.PUD_DOWN)       
     
     def main(self):
         """
@@ -117,7 +119,8 @@ class App:
         self._logger.info("Starte neue Messung")
 
         return {
-            "movement": self._detect_movement()
+            "movement": self._detect_movement(),
+            "lightbarrier": self._lichtschrankeFunktion()
         }
 
     def _detect_movement(self):
@@ -139,6 +142,14 @@ class App:
         """
         self._logger.info("Speichere Messwerte: %s" % self._pp.pformat(measurement))
         self._redis.xadd(REDIS_KEY_MEASUREMENT_VALUES, measurement)
+    
+    def _lichtschrankeFunktion(self):
+        status_tuer = GPIO.input(self.SIG)
+        if status_tuer == 1:
+            self._logger.info("Lichtschranke hat ein Signal erkannt")
+        else:
+            self._logger.info("Lichtschranke hat kein Signal erkannt")
+        return status_tuer
 
 if __name__ == "__main__":
     configfile = "app.conf"
