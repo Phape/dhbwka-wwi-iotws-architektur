@@ -68,11 +68,12 @@ class App:
         self.pin_sig = int(self.pin_sig)
 
         GPIO.setmode(GPIO.BCM)
-
+        #Drehschalter-Pins
         GPIO.setup(self.pin_clk, GPIO.IN, pull_up_down = GPIO.PUD_UP)
         GPIO.setup(self.pin_dt, GPIO.IN, pull_up_down = GPIO.PUD_UP)
         GPIO.setup(self.pin_button, GPIO.IN, pull_up_down = GPIO.PUD_UP)
 
+        #Lichtschranke-Pin
         GPIO.setup(self.pin_sig, GPIO.IN, pull_up_down = GPIO.PUD_DOWN)
 
         # Initiales Auslesen des Pin_CLK
