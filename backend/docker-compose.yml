@@ -13,7 +13,6 @@ services:
             - "9001:9001"
 
     # Datenbank
-    # Use root/example as user/password credentials
     db:
         image: mariadb
         restart: always
@@ -27,19 +26,7 @@ services:
             # - ./mariadb/conf/config-file.cnf:/etc/mysql/conf.d/config-file.cnf:ro
         ports:
             - "3306:3306"
-
-    # db:
-    #     image: mysql
-    #     # command: --default-authentication-plugin=mysql_native_password
-    #     restart: always
-    #     environment:
-    #         MYSQL_ROOT_PASSWORD: example
-    #     # volumes:
-    #     #     - ./mariadb/conf:/etc/mysql/conf.d # wird ignoriert https://stackoverflow.com/questions/53741107/mysql-in-docker-on-ubuntu-warning-world-writable-config-file-is-ignored
-    #     ports:
-    #         - "3306:3306"
     
-
     # Datenbank Web-Administration
     adminer:
         image: adminer
