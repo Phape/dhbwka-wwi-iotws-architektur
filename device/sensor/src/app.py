@@ -1,12 +1,12 @@
 #! /bin/env python
 
 import redis
-import configparser, logging, pprint, os, random, sys, time
+import configparser, logging, pprint, os, sys, time
 import RPi.GPIO as GPIO 
 import time
 
 REDIS_KEY_MEASUREMENT_INTERVAL = "measurement:interval"
-REDIS_KEY_MEASUREMENT_ENABLED  = "measurement:enabled"
+REDIS_ALERT_SYSTEM_ACTIVE = "system:active"
 REDIS_KEY_MEASUREMENT_VALUES   = "measurement:values"
 
 class App:
@@ -70,7 +70,7 @@ class App:
         """
         try:
             while True:
-                if self._is_measurement_enabled():
+                if self._is_alert_system_active():
                     mesaurement = self._perform_mesaurement()
                     self._save_measurement(mesaurement)
 
@@ -79,25 +79,16 @@ class App:
         except KeyboardInterrupt:
             pass
 
-    def _is_measurement_enabled(self):
+    def _is_alert_system_active(self):
+        """Prüft, ob das Alarmsystem scharfgestellt ist.
+
+        Returns:
+            bool: Wahr, wenn das Alarmsystem aktiviert ist.
         """
-        Prüft den Eintrag REDIS_KEY_MEASUREMENT_ENABLED in Redis, um festzustellen,
-        ob überhaupt Messungen vorgenommen werden sollen. Jeder Wert ungleich dem
-        String "0" wird dabei als Ja interpretiert. Fehlt der Eintrag, wird der in
-        self._enabled hinterlegte, zuletzt bekannte Werte verwendet.
-        """
-        enabled = self._redis.get(REDIS_KEY_MEASUREMENT_ENABLED)
-
-        if enabled == None:
-            return self._enabled
-
-        enabled = enabled != "0"
-        
-        if not enabled == self._enabled:
-            self._enabled = enabled
-            self._logger.info("Messung wird fortgeführt" if enabled else "Messung wird unterbrochen")
-
-        return enabled
+        if self._redis.get(REDIS_ALERT_SYSTEM_ACTIVE) == "1":
+            return True
+        else:
+            return False
 
     def _read_measurement_interval(self):
         """

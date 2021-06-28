@@ -1,1 +1,14 @@
-# TODO
+version: '3.7'
+
+services:
+    # MQTT Broker
+    mosquitto:
+        image: eclipse-mosquitto
+        # build: mosquitto/
+        restart: always
+        volumes:
+            - ./mosquitto:/mosquitto
+        ports:
+            - "1883:1883"
+            - "9001:9001"
+

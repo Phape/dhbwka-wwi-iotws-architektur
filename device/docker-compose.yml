@@ -4,6 +4,7 @@ volumes:
     redis-data:
     grafana-data:
     zigbee2mqtt-data:
+    camera-data:
 
 services:
     # Redis Key-Value Store
@@ -79,6 +80,58 @@ services:
         privileged: true
         environment:
           - TZ=Europe/Amsterdam
+    
+    #Kamera Service
+    camera:
+        build: ./camera
+        privileged: true
+        restart: always
+        volumes:
+         - camera-data:/data
+        devices:
+            - /dev/video0:/dev/video0
+        depends_on:
+            - redis
+        environment:
+            - REDIS_HOST=redis
+            - REDIS_PORT=6379
+            - REDIS_DB=0
+
+    # Service zum Versenden von E-Mails
+    mailhandler:
+        build: mailhandler/
+        restart: no
+        depends_on:
+            - redis
+            - alarmhandler
+        environment:
+            - REDIS_HOST=redis
+            - REDIS_PORT=6379
+            - REDIS_DB=0
+
+    # Service, der entscheidet, ob ein Alarm ausgelöst wird
+    alarmhandler:
+        build: alarmhandler/
+        restart: always
+        depends_on:
+            - redis
+        environment:
+            - REDIS_HOST=redis
+            - REDIS_PORT=6379
+            - REDIS_DB=0
+
+
+    # Aktoren
+    actuator:
+        build: actuator/
+        privileged: true
+        restart: always
+        depends_on:
+            - redis
+        environment:
+            - REDIS_HOST=redis
+            - REDIS_PORT=6379
+            - REDIS_DB=0
 
 ## Vollständiges Beispiel aus der Balena-Dokumentation. Ggf. wichtig als Vorlage,
 ## falls der direkte Hardwarezugriff in einem der Container nicht funktioniert.
