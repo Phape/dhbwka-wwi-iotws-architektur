@@ -121,6 +121,18 @@ services:
             - REDIS_DB=0
 
 
+    # Aktoren
+    actuator:
+        build: actuator/
+        privileged: true
+        restart: always
+        depends_on:
+            - redis
+        environment:
+            - REDIS_HOST=redis
+            - REDIS_PORT=6379
+            - REDIS_DB=0
+
 ## Vollständiges Beispiel aus der Balena-Dokumentation. Ggf. wichtig als Vorlage,
 ## falls der direkte Hardwarezugriff in einem der Container nicht funktioniert.
 ## Vgl. https://www.balena.io/docs/learn/develop/multicontainer/
