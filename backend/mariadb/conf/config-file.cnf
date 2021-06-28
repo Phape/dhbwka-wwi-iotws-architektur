@@ -1,11 +1,11 @@
-[client-server]
+# [client-server]
 # Uncomment these if you want to use a nonstandard connection to MariaDB
 #socket=/tmp/mysql.sock
-#port=3306
+port=3306
 
 # This will be passed to all MariaDB clients
-[client]
-password=example
+# [client]
+# password=example
 
 # The MariaDB server
 [mysqld]
