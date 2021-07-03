@@ -12,3 +12,46 @@ services:
             - "1883:1883"
             - "9001:9001"
 
+    # Datenbank
+    db:
+        image: mariadb
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: example
+            MYSQL_DATABASE: mysql
+            MYSQL_USER: mqtt
+            MYSQL_PASSWORD: smart-security
+        volumes:
+            - dbdata:/var/lib/mysql
+            # - ./mariadb/conf/config-file.cnf:/etc/mysql/conf.d/config-file.cnf:ro
+        ports:
+            - "3306:3306"
+    
+    # Datenbank Web-Administration
+    adminer:
+        image: adminer
+        restart: always
+        ports:
+        - 8080:8080
+
+    mqtt2mysql:
+        image: davidlor/python-autoclonable-app
+        depends_on: 
+            - db
+        environment: 
+            - GIT_REPOSITORY=https://github.com/David-Lor/MQTT2MySQL.git
+            - GIT_BRANCH=master
+            - APP_NAME=MQTT2MySQL
+            - MQTT_BROKER=mosquitto
+            - MQTT_PORT=1883
+            - MQTT_KEEPAPIVE=60
+            - MQTT_QOS=2
+            - SQL_USER=mqtt
+            - SQL_PASSWORD=smart-security
+            - SQL_DATABASE=mqtt
+            - SQL_HOST=db
+            - SQL_PORT=3306
+
+
+volumes:
+    dbdata:
