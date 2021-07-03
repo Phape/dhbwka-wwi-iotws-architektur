@@ -1,0 +1,11 @@
+apiVersion: 1
+
+datasources:
+  - name: MariaDB
+    type: mysql
+    isDefault: true
+    url: $SQL_HOST:$SQL_PORT
+    database: $SQL_DATABASE
+    user: $SQL_USER
+    secureJsonData:
+      password: $SQL_PASSWORD
