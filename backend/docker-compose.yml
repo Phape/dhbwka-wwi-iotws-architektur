@@ -52,6 +52,23 @@ services:
             - SQL_HOST=db
             - SQL_PORT=3306
 
+    grafana:
+        image: grafana/grafana
+        restart: always
+        depends_on: 
+            - db
+        ports: 
+            - 3000:3000
+        volumes:
+            - ./grafana/provisioning:/etc/grafana/provisioning
+            # - ./grafana/dashboards:/etc/grafana/dashboards
+        environment:
+            - SQL_HOST=db
+            - SQL_PORT=3306
+            - SQL_DATABASE=mqtt
+            - SQL_USER=mqtt
+            - SQL_PASSWORD=smart-security
+
 
 volumes:
     dbdata:
