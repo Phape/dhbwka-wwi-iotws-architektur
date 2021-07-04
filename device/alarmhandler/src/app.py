@@ -90,8 +90,11 @@ class App:
 
         # Hier Logik, die entscheidet, ob ein Alarm ausgelöst wird, bspw. Sensor 1 = 1 and Sensor 2 = 1
         self._logger.info("Prüfe, ob ein Alarm ausgelöst wird...")
-        if self._is_camera_recognized_person() and self._is_movement_detected():
-            self._logger.info("Kamera hat Person(en) erkannt und Bewegung wurde erkannt. Alarm wird aktiviert.")
+        if self._is_camera_recognized_person():
+            self._logger.info("Kamera hat Person(en) erkannt. Alarm wird aktiviert.")
+            enable_alert = True
+        elif self._is_light_barrier_disrupted():
+            self._logger.info("Lichtschranke unterbrochen. Alarm wird aktiviert.")
             enable_alert = True
 
         return enable_alert
@@ -129,16 +132,15 @@ class App:
                 numer_of_persons = int(entry[VALUES_INDEX]["persons"])
                 return True if numer_of_persons > 0 else False
 
-    def _is_movement_detected(self):
+    def _is_light_barrier_disrupted(self):
         last_measurements = self._redis.xrevrange(name=REDIS_KEY_MEASUREMENT_VALUES, min="-", max="+", count=5)
 
         VALUES_INDEX = 1
         for entry in last_measurements:
-            if "movement" in entry[VALUES_INDEX]:
-                movement_detected = int(entry[VALUES_INDEX]["movement"])
-                if movement_detected > 0:
-                    return True
-        return False
+            if "lightbarrier" in entry[VALUES_INDEX]:
+                light_barrier_status = int(entry[VALUES_INDEX]["lightbarrier"])
+                return True if light_barrier_status > 0 else False
+
     
 if __name__ == "__main__":
     configfile = "app.conf"
