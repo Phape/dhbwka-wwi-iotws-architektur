@@ -115,7 +115,7 @@ class App:
         self._send_mail_smtp(msg,self._mail_server_config["host"], self._mail_server_config["port"], self._mail_server_config["user"],self._mail_server_config["password"])
         self._delete_attached_file("/data/intruder.jpg")
 
-    def _attach_file_to_email(email, filename):
+    def _attach_file_to_email(self, email, filename):
         """Attach a file identified by filename, to an email message"""
         if os.path.isfile(filename):
             with open(filename, 'rb') as fp:
@@ -123,14 +123,14 @@ class App:
                 maintype, _, subtype = (mimetypes.guess_type(filename)[0] or 'application/octet-stream').partition("/")
                 email.add_attachment(file_data, maintype=maintype, subtype=subtype, filename=filename)
 
-    def _send_mail_smtp(mail, host, port, username, password):
+    def _send_mail_smtp(self, mail, host, port, username, password):
         s = smtplib.SMTP(host, port)
         s.starttls()
         s.login(username, password)
         s.send_message(mail)
         s.quit()
 
-    def _delete_attached_file(filename):
+    def _delete_attached_file(self, filename):
         if os.path.exists(filename):
             os.remove(filename)
 
