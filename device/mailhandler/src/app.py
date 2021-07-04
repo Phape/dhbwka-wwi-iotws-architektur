@@ -100,11 +100,11 @@ class App:
     def _send_mail(self):
 
         message = """\
-        Diese Nachricht wurde mit Python gesendet."""
+        Potenzieller Einbruch erkannt. Datum und Uhrzeit: {}""".format(time.localtime())
 
         #Email Message erstellen
         msg = EmailMessage()
-        msg['Subject'] = 'Intruder Alert!'
+        msg['Subject'] = 'Gauner gewahr geworden!'
         msg['From'] = self._mail_server_config["from_addr"]
         msg['To'] = self._mail_server_config["to_addrs"]
         # Set text content
