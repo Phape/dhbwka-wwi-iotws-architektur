@@ -65,14 +65,15 @@ class App:
         try:
             while True:
                 alert_enabled = self._is_alert_enabled()
-                last_alert_time = float(self._redis.get(REDIS_LAST_MAIL_ALERT_TIME))
-                self._logger.info("Letzte Alarmierung per Mail: " + datetime.datetime.utcfromtimestamp(last_alert_time).isoformat())
 
-                if not last_alert_time:
+                if self._redis.get(REDIS_LAST_MAIL_ALERT_TIME) is None:
                     self._logger.info("Keine letze Alarm-Mail-Zeit gefunden. Benachrichtige Nutzer per Mail.")
                     self._send_mail() # Parametrisieren, Hier Mail schicken, dass Alarmanlage in Betrieb ist
                     self._redis.set(REDIS_LAST_MAIL_ALERT_TIME, time.time())
 
+                last_alert_time = float(self._redis.get(REDIS_LAST_MAIL_ALERT_TIME))
+                self._logger.info("Letzte Alarmierung per Mail: " + datetime.datetime.utcfromtimestamp(last_alert_time).isoformat())
+                
                 if alert_enabled and time.time - last_alert_time > 3600: # alarm cooldown: 1h
                     self._logger.info("Alarm ist " + alert_enabled + ", Mail wird versendet.")
                     self._send_mail()
