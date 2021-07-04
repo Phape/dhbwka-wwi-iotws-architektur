@@ -247,8 +247,7 @@ class App:
 
         #Erkannter Mensch führt zum Abspeichern des Bildes in
         if len(persons) != 0:
-            timestr = time.strftime("%c", time.localtime())
-            img_name = "/data/" + timestr + ".jpg"
+            img_name = "/data/intruder.jpg"
             encode_param = (int(cv2.IMWRITE_JPEG_QUALITY), 90)
             cv2.imwrite(img_name, image, encode_param)
 

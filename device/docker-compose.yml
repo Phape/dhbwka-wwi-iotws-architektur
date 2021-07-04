@@ -101,6 +101,8 @@ services:
     mailhandler:
         build: mailhandler/
         restart: no
+        volumes:
+         - camera-data:/data
         depends_on:
             - redis
             - alarmhandler
