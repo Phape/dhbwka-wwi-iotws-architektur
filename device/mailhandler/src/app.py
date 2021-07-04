@@ -100,7 +100,7 @@ class App:
     def _send_mail(self):
 
         message = """\
-        Potenzieller Einbruch erkannt. Datum und Uhrzeit: {}""".format(time.localtime())
+        Potenzieller Einbruch erkannt. Datum und Uhrzeit: {}""".format(time.strftime("%c", time.localtime()))
 
         #Email Message erstellen
         msg = EmailMessage()
