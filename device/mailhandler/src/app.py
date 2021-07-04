@@ -75,7 +75,7 @@ class App:
                 self._logger.info("Letzte Alarmierung per Mail: " + datetime.datetime.utcfromtimestamp(last_alert_time).isoformat())
 
                 if alert_enabled and time.time() - last_alert_time > 3600: # alarm cooldown: 1h
-                    self._logger.info("Alarm ist " + alert_enabled + ", Mail wird versendet.")
+                    self._logger.info("Alarm ist " + str(alert_enabled) + ", Mail wird versendet.")
                     self._send_mail()
                     self._redis.set(REDIS_LAST_MAIL_ALERT_TIME, time.time())
                 else: 
