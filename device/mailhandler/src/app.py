@@ -110,10 +110,10 @@ class App:
         # Set text content
         msg.set_content(message)
 
-        _attach_file_to_email(msg, "/data/intruder.jpg")
+        self._attach_file_to_email(msg, "/data/intruder.jpg")
 
-        _send_mail_smtp(msg,self._mail_server_config["host"], self._mail_server_config["port"], self._mail_server_config["user"],self._mail_server_config["password"])
-        _delete_attached_file("/data/intruder.jpg")
+        self._send_mail_smtp(msg,self._mail_server_config["host"], self._mail_server_config["port"], self._mail_server_config["user"],self._mail_server_config["password"])
+        self._delete_attached_file("/data/intruder.jpg")
 
     def _attach_file_to_email(email, filename):
         """Attach a file identified by filename, to an email message"""
