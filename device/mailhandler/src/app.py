@@ -117,11 +117,17 @@ class App:
 
     def _attach_file_to_email(self, email, filename):
         """Attach a file identified by filename, to an email message"""
-        if os.path.isfile(filename):
+        if os.path.isfile(filename) and self._is_file_recent(filename):
             with open(filename, 'rb') as fp:
                 file_data = fp.read()
                 maintype, _, subtype = (mimetypes.guess_type(filename)[0] or 'application/octet-stream').partition("/")
                 email.add_attachment(file_data, maintype=maintype, subtype=subtype, filename=filename)
+
+    def _is_file_recent(self, filename):
+        if time.time() - os.path.getmtime(filename) < 10:
+            return True
+        else:
+            return False 
 
     def _send_mail_smtp(self, mail, host, port, username, password):
         s = smtplib.SMTP(host, port)
