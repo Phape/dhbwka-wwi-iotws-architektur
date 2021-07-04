@@ -54,13 +54,12 @@ class App:
         self.pin_dt        = os.getenv("BUTTON_DT")           or self._config["button"]["PIN_DT"]
         self.pin_button    = os.getenv("BUTTON_PIN")           or self._config["button"]["BUTTON_PIN"]
 
-        #bounce_millis = int(bounce_millis)
         self.pin_clk = int(self.pin_clk)
         self.pin_dt = int(self.pin_dt)
         self.pin_button = int(self.pin_button)
 
         GPIO.setmode(GPIO.BCM)
-
+        #Drehschalter-Pins
         GPIO.setup(self.pin_clk, GPIO.IN, pull_up_down = GPIO.PUD_UP)
         GPIO.setup(self.pin_dt, GPIO.IN, pull_up_down = GPIO.PUD_UP)
         GPIO.setup(self.pin_button, GPIO.IN, pull_up_down = GPIO.PUD_UP)
@@ -76,6 +75,7 @@ class App:
 
         GPIO.add_event_detect(self.pin_clk, GPIO.BOTH, callback=self._change_system_state, bouncetime=50)
         GPIO.add_event_detect(self.pin_button, GPIO.FALLING, callback=self._deactivate_alert, bouncetime=50)
+        
         try:
             while True:
                 time.sleep(10)
@@ -122,7 +122,7 @@ class App:
             return True
         else:
             return False
-    
+
 
 if __name__ == "__main__":
     configfile = "app.conf"

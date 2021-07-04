@@ -61,6 +61,8 @@ class App:
     
     def _system_active_cycle(self):
         # self._redis.set(REDIS_ALERT_ENABLED, "0") # For debugging
+        if self._redis.get(REDIS_ALERT_ENABLED) is None:
+            self._redis.set(REDIS_ALERT_ENABLED, "0")
         alert_enabled = self._is_alert_enabled()
         print("alert enabled von Redis: " + self._redis.get(REDIS_ALERT_ENABLED) + " variable: " + str(alert_enabled))
 
