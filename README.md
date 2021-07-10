@@ -1,5 +1,4 @@
-IoT-Beispielarchitektur für die Vorlesung „IoT-Technik und Geschäftsmodelle”
-============================================================================
+# Smart-Security (Ein Projekt der Vorlesung "IoT-Technik und Geschäftsmodelle")
 
 <table style="max-width: 100%;">
     <tr>
@@ -58,54 +57,21 @@ IoT-Beispielarchitektur für die Vorlesung „IoT-Technik und Geschäftsmodelle�
     </tr>
 </table>
 
-Kurzbeschreibung
-----------------
+## Kurzbeschreibung
 
-Dieses Repository enthält ein minimales Beispiel für eine moderne IoT-Architektur
-bestehend aus den Softwarekomponenten für die IoT-Devices sowie das Backend.
-Programmiersprache ist Python. Entwicklung, Test und Produktivsetzung sämtlicher
-Komponenten erfolgen mit Docker – sowohl auf den IoT-Devices als auch im Backend.
-Auf Seiten der Devices wird dies durch die **Balena Cloud** im Produktivbetrieb
-bzw. das **Balena CLI** während der Entwicklung vollständig automatisiert. Die
-Docker-Container des Backends können hingegen in „klassischen“ Cloudumgebungen
-deployt werden.
+Dies ist das Repository des Projektes "Smart-Security", einem smarten Alarmsystem.
+Das Projekt ist in folgende Softwarekomponenten gegliedert:
 
-Das Beispiel ist minimal in dem Sinne, dass nur die wichtigsten Bausteine zur
-Umsetzung der Systemarchitektur enthalten sind. Der Quellcode kann daher leicht
-nachvollzogen und an eigene Bedürfnisse angepasst werden. Es ist jedoch vollständig
-genug, um mit wenigen Anpassungen reale Anwendungsfälle erfüllen zu können.
+- backend
+  - enthält alle Services, die serverseitig (backendseitig) ausgeführt werden. Für mehr Informationen siehe auch [backend readme](backend/README.md)
+  - die Backend Docker-Container können in jeder beliebigen Docker-Engine ausgeführt werden
+- device
+  - enthält alle Services, die deviceseitig (bspw. RaspberryPi) ausgeführt werden. Für mehr Informationen siehe auch [device readme](device/README.md)
+  - das Deployment erflogt über die Balena-Cloud
+- misc
+  - enthält alles, was nicht zum Backend oder der Deviceseite gehört, bspw. Bilder für diese Readme
 
-Die IoT-Devices umfassen folgende Komponenten:
-
- * `redis`: Zentraler Redis-Server
- * `sensor`: Python-Programm zum Auslesen der Sensordaten und Ablage in Redis
- * `startstopbutton`: Python-Programm zum Starten und Stoppen der Sensormessungen
- * `mqtthandler`: Python-Programm zum Versand der Sensordaten via MQTT
- * `grafana`: Lokales Grafana-Dashboard zur Überwachung der Devices
-
-Hauptbestandteil ist hier der Redis-Server, der als strukturierter in-memory
-Key-Value-Store sowohl für die lokale Zwischenspeicherung der Sensordaten als
-auch die Kommunikation der Teilprogramme untereinander sorgt. Der Server ist
-so konfiguriert, dass bei einem Stromausfall maximal die Daten der letzten
-Sekunde verloren gehen können.
-
-Die Sensordaten werden dabei via MQTT an das Backend sowie weitere, interessierte
-Empfänger verschickt. Dabei ist sichergestellt, dass bei einem Teilausfall des
-Systems keine Sensordaten verloren gehen, sondern der Sendevorgang automatisch
-nachgeholt wird. Ebenso erlauben die Devices eine einfache Fernsteuerung durch
-JSON-kodierte Kommandos via MQTT.
-
-Das Backend umfasst hingegen folgende Komponenten:
-
- * `mqttserver`: Zentraler MQTT-Server zum Datenaustausch mit den IoT-Devices
- * `mariadb`: MariaDB (ehemals MySQL) Datenbank zur dauerhaften Sicherung der Sensorwerte
- * `receiver`: Python-Programm zum Emfpang der Sensordaten und Ablage in der Datenbank
- * `webadmin`: Webbasierte Admin-Oberfläche zur Einsicht der Sensordaten und Steuerung der Devices
-
-**Der Serverteil ist derzeit in Arbeit und fehlt deshalb noch.**
-
-Entwicklung der IoT-Devices
----------------------------
+## Entwicklung der IoT-Devices
 
 Das **Balena CLI** kann sämtliche Client-Komponenten auf einen lokales Entwicklerboard
 (hier Rasbperry Pi) ausführen und bei Änderungen am Quellcode automatisch aktualisieren
@@ -143,24 +109,16 @@ Folgende Befehle können bei der Entwicklung nützlich sein:
 * `balena ssh xxxxxx.local mqtthandler`: <br/>
   SSH-Verbindung zu einem Containersystem des Devices herstellen
 
-Produktivsetzung der IoT-Devices
---------------------------------
+## Produktivsetzung der IoT-Devices
 
 Zur Produktivsetzung der Devices muss in der Cloud der „Local Mode” deaktiviert
 werden (in den Geräteeinstellungen des Entwicklerboards). Anschließend kann das
 Device wieder über die Balena Cloud verwaltet und konfiguriert werden. Das
 eigentliche Deployment erfolgt mit folgendem Befehl:
 
-`balena push IoT-Projekt`
+`balena push smart-security`
 
-Die Bezeichnung `IoT-Projekt` muss dabei durch den tatsächlichen Namen der Anwendung
-innerhalb der Balena Cloud ersetzt werden. Innerhalb der Cloud kann das Verhalten
-der Devices über verschiedene Umgebungsvariablen beeinflusst werden. Eine Auflistung
-findet sich in den README-Dateien und den Konfigurationsdateien der einzelnen
-Komponenten.
-
-Entwicklung des Backends
-------------------------
+## Entwicklung des Backends
 
 Die Backendkomponenten können zum Test mit **Docker Compose** lokal gestartet
 werden. Zum Beispiel mit folgenden Befehlen:
@@ -171,18 +129,12 @@ werden. Zum Beispiel mit folgenden Befehlen:
  * `docker-compose down`: <br/>
  Stoppen aller Backend-Services
 
-Produktivsetzung des Backends
------------------------------
+## Produktivsetzung des Backends
 
-Die Docker-Container können in einer beliebigen Cloud-Container-Umgebung deployed
-werden. In der Regel muss dann die Adresse des MQTT-Servers in der Device-Konfiguration
-durch setzen der entsprechenden Umgebungsvariablen in der Balena Cloud angepasst
-werden. Denn standardmäßig wird der öffentliche, nicht gesicherte Sandboxserver
-`broker.hivemq.com` verwendet, was zum Testen schön aber für die Produktivsetzung
-ein No-Go ist.
+Die Docker-Container können in einer beliebigen (Cloud-)Container-Umgebung deployed
+werden.
 
-Copyright
----------
+## Copyright
 
 Sämtliche Quellcodes sind lizenziert unter
 [_Creative Commons Namensnennung 4.0 International_](http://creativecommons.org/licenses/by/4.0/)
