@@ -4,7 +4,6 @@ services:
     # MQTT Broker
     mosquitto:
         image: eclipse-mosquitto
-        # build: mosquitto/
         restart: always
         volumes:
             - ./mosquitto:/mosquitto
