@@ -34,6 +34,7 @@ services:
         ports:
         - 8080:8080
 
+    # Receiver, schreibt MQTT-Nachrichten in die MariaDB
     mqtt2mysql:
         image: davidlor/python-autoclonable-app
         depends_on: 
@@ -51,7 +52,8 @@ services:
             - SQL_DATABASE=mqtt
             - SQL_HOST=db
             - SQL_PORT=3306
-
+    
+    # Dashboard für das Backend, visualisiert Daten aus der MariaDB
     grafana:
         image: grafana/grafana
         restart: always
@@ -71,4 +73,5 @@ services:
 
 
 volumes:
+    # Docker-Volume für die MariaDB (persistenter Datenspeicher)
     dbdata:

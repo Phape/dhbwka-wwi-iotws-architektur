@@ -1,13 +1,15 @@
-Serverseitiger Softwarestack
-=============================
+# Serverseitiger Softwarestack
 
-Dieses Verzeichnis enthält die Quellcodes und Softwarekomponenten für die Serverseite.
+Dieses Verzeichnis enthält die Quellcodes und Softwarekomponenten für die Serverseite ("Backend").
 Auch hier wird Docker genutzt, um alle Komponenten in Containern zu verpacken und
 zu deployen.
 
- * `mqttserver`: Zentraler MQTT-Server zum Datenaustausch mit den IoT-Devices
- * `mariadb`: MariaDB (ehemals MySQL) Datenbank zur dauerhaften Sicherung der Sensorwerte
- * `receiver`: Python-Programm zum Emfpang der Sensordaten und Ablage in der Datenbank
- * `webadmin`: Webbasierte Admin-Oberfläche zur Einsicht der Sensordaten und Steuerung der Devices
+## Docker-Services
 
-**Der Serverteil ist derzeit in Arbeit und fehlt deshalb noch.**
+Siehe auch [docker-compose](docker-compose.yml)
+
+* `mosquitto`: Zentraler MQTT-Server zum Datenaustausch mit den IoT-Devices
+* `db`: MariaDB (ehemals MySQL) Datenbank zur dauerhaften Sicherung der Sensorwerte
+* `adminer`: Python-Programm zum Emfpang der Sensordaten und Ablage in der Datenbank
+* `mqtt2mysql`: Programm zum Empfangen der Sensordaten (MQTT) und Ablage in der Datenbank (MariaDB, MySQL)
+* `grafana`: Webbasiertes Dashboard für die Visualisierung der Daten aus der Datenbank
