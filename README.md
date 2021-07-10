@@ -118,6 +118,12 @@ eigentliche Deployment erfolgt mit folgendem Befehl:
 
 `balena push smart-security`
 
+## Raspberry Pi Sensoren und Aktoren
+
+Für die GPIO-Belegung siehe entsprechenden [wiki-Eintrag](https://github.com/Phape/smart-security/wiki/Raspberry-Pi-GPIO-Belegung).
+
+Zigbee-Geräte werden via MQTT eingebunden. Mehr dazu im [wiki](https://github.com/Phape/smart-security/wiki/Zigbee) und im [Blog-Eintrag "Zigbee mit dem Raspi"](https://www.iot-embedded.de/iot-2021/smart-security/zigbee-mit-dem-raspi/)
+
 ## Entwicklung des Backends
 
 Die Backendkomponenten können zum Test mit **Docker Compose** lokal gestartet
