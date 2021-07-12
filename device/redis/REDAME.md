@@ -1,8 +1,6 @@
-Redis-Server
-============
+# Redis-Server
 
-Beschreibung
-------------
+## Beschreibung
 
 Dieser Container stellt einen lokalen Redis-Server auf dem IoT-Device zur Verfügung.
 Es handelt sich dabei um das Herzstück des deviceseitigen Softwarestacks, da Redis
@@ -22,7 +20,6 @@ eine halbe Million Messwerte gespeichert werden könnten.
 
 Vgl. https://redis.io/topics/faq, What's the Redis memory footprint?
 
-Umgebungsvariablen
-------------------
+## Umgebungsvariablen
 
 Keine
